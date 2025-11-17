@@ -19,30 +19,25 @@ Run MATLAB® using AI applications. The MATLAB MCP Core Server allows your AI ap
 ## Setup
 
 1. Install [MATLAB (MathWorks)](https://www.mathworks.com/help/install/ug/install-products-with-internet-connection.html) 2020b or later and add it to the system PATH.
-2. Download the [Latest Release](https://github.com/matlab/matlab-mcp-core-server/releases/latest) from GitHub®. Alternatively, you can install [Go](https://go.dev/doc/install) and build the binary from source using `go install github.com/matlab/matlab-mcp-core-server/cmd/matlab-mcp-core-server`. 
-3. Add the MATLAB MCP Core Server to your AI application. You can find instructions for adding MCP servers in the documentation of your AI application. For example instructions on using Claude Code®, Claude Desktop®, and GitHub Copilot in Visual Studio® Code, see below. Note that you can customize the server by specifying optional [arguments](#arguments).
+2. For Windows or Linux, download the [Latest Release](https://github.com/matlab/matlab-mcp-core-server/releases/latest) from GitHub®. Alternatively, you can install [Go](https://go.dev/doc/install) and build the binary from source using
+    ```sh
+    go install github.com/matlab/matlab-mcp-core-server/cmd/matlab-mcp-core-server
+    ```
 
-#### Download on macOS
-
-From a macOS terminal, use `curl` to download the latest version of the MATLAB MCP Core Server for your macOS architecture.
-
-* macOS (Apple silicon processor)
-
+   For macOS, first download the latest release by running the following command in your terminal:
+    * For Apple silicon processors, run: 
+      ```sh
+      curl -L -o ~/Downloads/matlab-mcp-core-server https://github.com/matlab/matlab-mcp-core-server/releases/latest/download/matlab-mcp-core-server-maca64
+      ```
+    * For Intel processors, run:
+      ```sh
+      curl -L -o ~/Downloads/matlab-mcp-core-server https://github.com/matlab/matlab-mcp-core-server/releases/latest/download/matlab-mcp-core-server-maci64
+      ```
+   Then grant executable permissions to the downloaded binary so you can run the MATLAB MCP Core Server:  
    ```sh
-   curl -L -o ~/Downloads/matlab-mcp-core-server https://github.com/matlab/matlab-mcp-core-server/releases/latest/download/matlab-mcp-core-server-maca64
+   chmod +x ~/Downloads/matlab-mcp-core-server
    ```
-
-* macOS (Intel processor)
-
-   ```sh
-   curl -L -o ~/Downloads/matlab-mcp-core-server https://github.com/matlab/matlab-mcp-core-server/releases/latest/download/matlab-mcp-core-server-maci64
-   ```
-
-Give the downloaded file executable permissions so that you can run the MATLAB MCP Core Server:
-
-```sh
-chmod +x ~/Downloads/matlab-mcp-core-server
-```
+ 4. Add the MATLAB MCP Core Server to your AI application. You can find instructions for adding MCP servers in the documentation of your AI application. For example instructions on using Claude Code®, Claude Desktop®, and GitHub Copilot in Visual Studio® Code, see below. Note that you can customize the server by specifying optional [Arguments](#arguments).
 
 ### Claude Code
 
@@ -50,7 +45,7 @@ In your terminal, run the following, remembering to insert the full path to the 
 ```sh
 claude mcp add --transport stdio matlab /fullpath/to/matlab-mcp-core-server-binary [arguments...]
 ```
-You can customize the server by specifying [arguments](#arguments):
+You can customize the server by specifying optional [Arguments](#arguments):
 ```sh
 claude mcp add --transport stdio matlab /fullpath/to/matlab-mcp-core-server-binary --initial-working-folder=/home/username/myproject
 ```
@@ -62,7 +57,7 @@ claude mcp remove matlab
 
 ### Claude Desktop
 
-Follow the instructions on the page [Connect to local MCP servers (MCP)](https://modelcontextprotocol.io/docs/develop/connect-local-servers) to install Node.js and the Filesystem Server. In your Claude Desktop configuration file, you need to add the configuration for the MATLAB MCP Core Server as well as the Filesystem Server. You can use the combined JSON below. In the Filesystem `args`, remember to specify which paths the server can access. In the MATLAB `args`, remember to insert the full path to the server binary you acquired, as well as any other arguments:
+Follow the instructions on the page [Connect to local MCP servers (MCP)](https://modelcontextprotocol.io/docs/develop/connect-local-servers) to install Node.js and the Filesystem Server. In your Claude Desktop configuration file, you need to add the configuration for the MATLAB MCP Core Server as well as the Filesystem Server. You can use the combined JSON below. In the Filesystem `args`, remember to specify which paths the server can access. In the MATLAB `args`, remember to insert the full path to the server binary you acquired, as well as any other [Arguments](#arguments). (Note that on Windows, your paths require extra backslashes as escape characters).
 
 ```json
 {
@@ -76,7 +71,7 @@ Follow the instructions on the page [Connect to local MCP servers (MCP)](https:/
          ]
       },
       "matlab": {
-         "command": "fullpath\\to\\matlab-mcp-core-server-binary",
+         "command": "C:\\fullpath\\to\\matlab-mcp-core-server-binary",
          "args": [
             "--initial-working-folder=C:\\Users\\username\\Documents"
          ]
@@ -84,11 +79,11 @@ Follow the instructions on the page [Connect to local MCP servers (MCP)](https:/
    }
 }
 ```
-After saving the configuration file, quit and restart Claude Desktop. 
+After saving the configuration file, quit Claude Desktop by clicking **File > Exit**, then restart Claude Desktop. 
 
 ### GitHub Copilot in Visual Studio Code
 
-VS Code provides different methods to [Add an MCP Server (VS Code)](https://code.visualstudio.com/docs/copilot/customization/mcp-servers?wt.md_id=AZ-MVP-5004796#_add-an-mcp-server). MathWorks recommends you follow the steps in the section **"Add an MCP server to a workspace `mcp.json` file"**. In your `mcp.json` configuration file, add the following, remembering to insert the full path to the server binary you acquired in the setup, as well as any arguments:
+VS Code provides different methods to [Add an MCP Server (VS Code)](https://code.visualstudio.com/docs/copilot/customization/mcp-servers?wt.md_id=AZ-MVP-5004796#_add-an-mcp-server). MathWorks recommends you follow the steps in the section **"Add an MCP server to a workspace `mcp.json` file"**. In your `mcp.json` configuration file, add the following, remembering to insert the full path to the server binary you acquired in the setup, as well as any [Arguments](#arguments):
 ```json
 {
     "servers": {
