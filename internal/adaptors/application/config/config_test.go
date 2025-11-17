@@ -457,19 +457,31 @@ func TestConfig_Log_HappyPath(t *testing.T) {
 		name                string
 		args                []string
 		expectedLogMessage  string
-		expectedConfigField string
+		expectedConfigField map[string]any
 	}{
 		{
-			name:                "default configuration",
-			args:                []string{},
-			expectedLogMessage:  "Configuration state",
-			expectedConfigField: `{"disable-telemetry":false, "initial-working-folder":"", "log-level":"info", "matlab-root":"", "use-single-matlab-session":true}`,
+			name:               "default configuration",
+			args:               []string{},
+			expectedLogMessage: "Configuration state",
+			expectedConfigField: map[string]any{
+				"disable-telemetry":         false,
+				"initial-working-folder":    "",
+				"log-level":                 entities.LogLevelInfo,
+				"matlab-root":               "",
+				"use-single-matlab-session": true,
+			},
 		},
 		{
-			name:                "custom configuration",
-			args:                []string{"--disable-telemetry", "--use-single-matlab-session=false", "--log-level=debug", "--initial-working-folder=/home/user", "--matlab-root=/home/matlab"},
-			expectedLogMessage:  "Configuration state",
-			expectedConfigField: `{"disable-telemetry":true, "initial-working-folder":"/home/user", "log-level":"debug", "matlab-root":"/home/matlab", "use-single-matlab-session":false}`,
+			name:               "custom configuration",
+			args:               []string{"--disable-telemetry", "--use-single-matlab-session=false", "--log-level=debug", "--initial-working-folder=/home/user", "--matlab-root=/home/matlab"},
+			expectedLogMessage: "Configuration state",
+			expectedConfigField: map[string]any{
+				"disable-telemetry":         true,
+				"initial-working-folder":    "/home/user",
+				"log-level":                 entities.LogLevelDebug,
+				"matlab-root":               "/home/matlab",
+				"use-single-matlab-session": false,
+			},
 		},
 	}
 
@@ -499,13 +511,11 @@ func TestConfig_Log_HappyPath(t *testing.T) {
 			fields, found := infoLogs[testConfig.expectedLogMessage]
 			require.True(t, found, "Expected log message not found")
 
-			configField, exists := fields["config"]
-			require.True(t, exists, "Config field not found in log")
-
-			configJSON, ok := configField.(string)
-			require.True(t, ok, "Config field should be a string")
-
-			assert.JSONEq(t, testConfig.expectedConfigField, configJSON)
+			for expectedField, expectedValue := range testConfig.expectedConfigField {
+				actualValue, exists := fields[expectedField]
+				require.True(t, exists, "%s field not found in log", expectedField)
+				assert.Equal(t, expectedValue, actualValue, "%s field has incorrect value", expectedField)
+			}
 		})
 	}
 }

@@ -2,6 +2,8 @@
 
 package directory
 
+import "github.com/matlab/matlab-mcp-core-server/internal/entities"
+
 const defaultLogDirPattern = "matlab-mcp-core-server-"
 
 type OSLayer interface {
@@ -34,4 +36,10 @@ func (d *Directory) BaseDir() string {
 
 func (d *Directory) MkdirTemp(pattern string) (string, error) {
 	return d.osFacade.MkdirTemp(d.logDir, pattern)
+}
+
+func (d *Directory) RecordToLogger(logger entities.Logger) {
+	logger.
+		With("log-dir", d.logDir).
+		Info("Application directory state")
 }

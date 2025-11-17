@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	"github.com/matlab/matlab-mcp-core-server/internal/entities"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -35,46 +36,42 @@ func (_m *MockDirectory) EXPECT() *MockDirectory_Expecter {
 	return &MockDirectory_Expecter{mock: &_m.Mock}
 }
 
-// BaseDir provides a mock function for the type MockDirectory
-func (_mock *MockDirectory) BaseDir() string {
-	ret := _mock.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for BaseDir")
-	}
-
-	var r0 string
-	if returnFunc, ok := ret.Get(0).(func() string); ok {
-		r0 = returnFunc()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-	return r0
+// RecordToLogger provides a mock function for the type MockDirectory
+func (_mock *MockDirectory) RecordToLogger(logger entities.Logger) {
+	_mock.Called(logger)
+	return
 }
 
-// MockDirectory_BaseDir_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'BaseDir'
-type MockDirectory_BaseDir_Call struct {
+// MockDirectory_RecordToLogger_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'RecordToLogger'
+type MockDirectory_RecordToLogger_Call struct {
 	*mock.Call
 }
 
-// BaseDir is a helper method to define mock.On call
-func (_e *MockDirectory_Expecter) BaseDir() *MockDirectory_BaseDir_Call {
-	return &MockDirectory_BaseDir_Call{Call: _e.mock.On("BaseDir")}
+// RecordToLogger is a helper method to define mock.On call
+//   - logger entities.Logger
+func (_e *MockDirectory_Expecter) RecordToLogger(logger interface{}) *MockDirectory_RecordToLogger_Call {
+	return &MockDirectory_RecordToLogger_Call{Call: _e.mock.On("RecordToLogger", logger)}
 }
 
-func (_c *MockDirectory_BaseDir_Call) Run(run func()) *MockDirectory_BaseDir_Call {
+func (_c *MockDirectory_RecordToLogger_Call) Run(run func(logger entities.Logger)) *MockDirectory_RecordToLogger_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run()
+		var arg0 entities.Logger
+		if args[0] != nil {
+			arg0 = args[0].(entities.Logger)
+		}
+		run(
+			arg0,
+		)
 	})
 	return _c
 }
 
-func (_c *MockDirectory_BaseDir_Call) Return(s string) *MockDirectory_BaseDir_Call {
-	_c.Call.Return(s)
+func (_c *MockDirectory_RecordToLogger_Call) Return() *MockDirectory_RecordToLogger_Call {
+	_c.Call.Return()
 	return _c
 }
 
-func (_c *MockDirectory_BaseDir_Call) RunAndReturn(run func() string) *MockDirectory_BaseDir_Call {
-	_c.Call.Return(run)
+func (_c *MockDirectory_RecordToLogger_Call) RunAndReturn(run func(logger entities.Logger)) *MockDirectory_RecordToLogger_Call {
+	_c.Run(run)
 	return _c
 }

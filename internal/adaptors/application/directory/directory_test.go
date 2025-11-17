@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/application/directory"
+	"github.com/matlab/matlab-mcp-core-server/internal/testutils"
 	directorymocks "github.com/matlab/matlab-mcp-core-server/mocks/adaptors/application/directory"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -132,4 +133,34 @@ func TestMkdirTemp_MkdirTempError(t *testing.T) {
 	// Assert
 	require.ErrorIs(t, err, expectedError, "MkdirTemp should return the error from OSLayer.MkdirTemp")
 	assert.Empty(t, tempDir, "MkdirTemp should return empty string when error occurs")
+}
+func TestDirectory_RecordToLogger_HappyPath(t *testing.T) {
+	// Arrange
+	mockOSLayer := &directorymocks.MockOSLayer{}
+	defer mockOSLayer.AssertExpectations(t)
+
+	baseLogDir := "/tmp/matlab-mcp-core-server-33333"
+	mockOSLayer.EXPECT().
+		MkdirTemp("", mock.AnythingOfType("string")).
+		Return(baseLogDir, nil).
+		Once()
+
+	directory, err := directory.New(mockOSLayer)
+	require.NoError(t, err)
+
+	testLogger := testutils.NewInspectableLogger()
+
+	// Act
+	directory.RecordToLogger(testLogger)
+
+	// Assert
+	infoLogs := testLogger.InfoLogs()
+	require.Len(t, infoLogs, 1)
+
+	fields, found := infoLogs["Application directory state"]
+	require.True(t, found, "Expected log message not found")
+
+	actualValue, exists := fields["log-dir"]
+	require.True(t, exists, "log-dir field not found in log")
+	assert.Equal(t, baseLogDir, actualValue, "log-dir field has incorrect value")
 }

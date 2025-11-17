@@ -16,8 +16,6 @@ import (
 
 func TestNew_HappyPath(t *testing.T) {
 	// Arrange
-	mockLogger := testutils.NewInspectableLogger()
-
 	mockLifecycleSignaler := &orchestratormocks.MockLifecycleSignaler{}
 	defer mockLifecycleSignaler.AssertExpectations(t)
 
@@ -41,16 +39,6 @@ func TestNew_HappyPath(t *testing.T) {
 
 	mockDirectory := &orchestratormocks.MockDirectory{}
 	defer mockDirectory.AssertExpectations(t)
-
-	mockLoggerFactory.EXPECT().
-		GetGlobalLogger().
-		Return(mockLogger).
-		Once()
-
-	mockDirectory.EXPECT().
-		BaseDir().
-		Return("").
-		Once()
 
 	//Act
 	orchestratorInstance := orchestrator.New(
@@ -102,14 +90,14 @@ func TestOrchestrator_StartAndWaitForCompletion_HappyPath(t *testing.T) {
 	mockLoggerFactory.EXPECT().
 		GetGlobalLogger().
 		Return(mockLogger).
+		Twice()
+
+	mockConfig.EXPECT().
+		RecordToLogger(mockLogger.AsMockArg()).
+		Return().
 		Once()
 
 	mockDirectory.EXPECT().
-		BaseDir().
-		Return("").
-		Once()
-
-	mockConfig.EXPECT().
 		RecordToLogger(mockLogger.AsMockArg()).
 		Return().
 		Once()
@@ -225,14 +213,14 @@ func TestOrchestrator_StartAndWaitForCompletion_ServerError(t *testing.T) {
 	mockLoggerFactory.EXPECT().
 		GetGlobalLogger().
 		Return(mockLogger).
+		Twice()
+
+	mockConfig.EXPECT().
+		RecordToLogger(mockLogger.AsMockArg()).
+		Return().
 		Once()
 
 	mockDirectory.EXPECT().
-		BaseDir().
-		Return("").
-		Once()
-
-	mockConfig.EXPECT().
 		RecordToLogger(mockLogger.AsMockArg()).
 		Return().
 		Once()
@@ -331,14 +319,14 @@ func TestOrchestrator_StartAndWaitForCompletion_InitializeMATLABErrorDoesNotTrig
 	mockLoggerFactory.EXPECT().
 		GetGlobalLogger().
 		Return(mockLogger).
+		Twice()
+
+	mockConfig.EXPECT().
+		RecordToLogger(mockLogger.AsMockArg()).
+		Return().
 		Once()
 
 	mockDirectory.EXPECT().
-		BaseDir().
-		Return("").
-		Once()
-
-	mockConfig.EXPECT().
 		RecordToLogger(mockLogger.AsMockArg()).
 		Return().
 		Once()
@@ -456,14 +444,14 @@ func TestOrchestrator_StartAndWaitForCompletion_WaitForShutdownToCompleteError(t
 	mockLoggerFactory.EXPECT().
 		GetGlobalLogger().
 		Return(mockLogger).
+		Twice()
+
+	mockConfig.EXPECT().
+		RecordToLogger(mockLogger.AsMockArg()).
+		Return().
 		Once()
 
 	mockDirectory.EXPECT().
-		BaseDir().
-		Return("").
-		Once()
-
-	mockConfig.EXPECT().
 		RecordToLogger(mockLogger.AsMockArg()).
 		Return().
 		Once()
@@ -578,12 +566,12 @@ func TestOrchestrator_runMATLABMCPServerMain_MultipleSession_HappyPath(t *testin
 		Return(mockLogger).
 		Once()
 
-	mockDirectory.EXPECT().
-		BaseDir().
-		Return("").
+	mockConfig.EXPECT().
+		RecordToLogger(mockLogger.AsMockArg()).
+		Return().
 		Once()
 
-	mockConfig.EXPECT().
+	mockDirectory.EXPECT().
 		RecordToLogger(mockLogger.AsMockArg()).
 		Return().
 		Once()

@@ -3,7 +3,6 @@
 package config
 
 import (
-	"encoding/json"
 	"runtime/debug"
 	"strings"
 
@@ -83,16 +82,11 @@ func (c *Config) WatchdogMode() bool {
 }
 
 func (c *Config) RecordToLogger(logger entities.Logger) {
-	data, err := json.Marshal(map[string]any{
-		disableTelemetry:                 c.disableTelemetry,
-		useSingleMATLABSession:           c.useSingleMATLABSession,
-		logLevel:                         c.logLevel,
-		preferredLocalMATLABRoot:         c.preferredLocalMATLABRoot,
-		preferredMATLABStartingDirectory: c.preferredMATLABStartingDirectory,
-	})
-	if err != nil {
-		logger.WithError(err).Error("Failed to serialize configuration")
-		return
-	}
-	logger.With("config", string(data)).Info("Configuration state")
+	logger.
+		With(disableTelemetry, c.disableTelemetry).
+		With(useSingleMATLABSession, c.useSingleMATLABSession).
+		With(logLevel, c.logLevel).
+		With(preferredLocalMATLABRoot, c.preferredLocalMATLABRoot).
+		With(preferredMATLABStartingDirectory, c.preferredMATLABStartingDirectory).
+		Info("Configuration state")
 }
