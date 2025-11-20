@@ -128,8 +128,8 @@ func TestOrchestrator_StartAndWaitForCompletion_HappyPath(t *testing.T) {
 		Once()
 
 	mockGlobalMATLABManager.EXPECT().
-		Initialize(ctx, mockLogger.AsMockArg()).
-		Return(nil).
+		Client(ctx, mockLogger.AsMockArg()).
+		Return(nil, nil).
 		Once()
 
 	mockSignalLayer.EXPECT().
@@ -241,8 +241,8 @@ func TestOrchestrator_StartAndWaitForCompletion_ServerError(t *testing.T) {
 		Once()
 
 	mockGlobalMATLABManager.EXPECT().
-		Initialize(ctx, mockLogger.AsMockArg()).
-		Return(nil).
+		Client(ctx, mockLogger.AsMockArg()).
+		Return(nil, nil).
 		Once()
 
 	mockSignalLayer.EXPECT().
@@ -350,8 +350,8 @@ func TestOrchestrator_StartAndWaitForCompletion_InitializeMATLABErrorDoesNotTrig
 		Once()
 
 	mockGlobalMATLABManager.EXPECT().
-		Initialize(ctx, mockLogger.AsMockArg()).
-		Return(expectedError).
+		Client(ctx, mockLogger.AsMockArg()).
+		Return(nil, expectedError).
 		Once()
 
 	mockSignalLayer.EXPECT().
@@ -472,8 +472,8 @@ func TestOrchestrator_StartAndWaitForCompletion_WaitForShutdownToCompleteError(t
 		Once()
 
 	mockGlobalMATLABManager.EXPECT().
-		Initialize(ctx, mockLogger.AsMockArg()).
-		Return(nil).
+		Client(ctx, mockLogger.AsMockArg()).
+		Return(nil, nil).
 		Once()
 
 	mockSignalLayer.EXPECT().

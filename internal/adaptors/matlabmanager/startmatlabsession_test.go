@@ -42,8 +42,13 @@ func TestMATLABManager_StartMATLABSession_HappyPath(t *testing.T) {
 
 	sessionCleanupFunc := func() error { return nil }
 
+	localSessionDetails := datatypes.LocalSessionDetails{
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
+	}
+
 	mockMATLABServices.EXPECT().
-		StartLocalMATLABSession(mock.Anything, datatypes.LocalSessionDetails{MATLABRoot: matlabRoot}).
+		StartLocalMATLABSession(mock.Anything, localSessionDetails).
 		Return(connectionDetails, sessionCleanupFunc, nil).
 		Once()
 
@@ -61,7 +66,8 @@ func TestMATLABManager_StartMATLABSession_HappyPath(t *testing.T) {
 	ctx := t.Context()
 
 	startRequest := entities.LocalSessionDetails{
-		MATLABRoot: matlabRoot,
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
 	}
 
 	// Act
@@ -88,8 +94,13 @@ func TestMATLABManager_StartMATLABSession_MATLABServicesError(t *testing.T) {
 	matlabRoot := "/path/to/matlab/R2023a"
 	expectedError := assert.AnError
 
+	localSessionDetails := datatypes.LocalSessionDetails{
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
+	}
+
 	mockMATLABServices.EXPECT().
-		StartLocalMATLABSession(mock.Anything, datatypes.LocalSessionDetails{MATLABRoot: matlabRoot}).
+		StartLocalMATLABSession(mock.Anything, localSessionDetails).
 		Return(embeddedconnector.ConnectionDetails{}, nil, expectedError).
 		Once()
 
@@ -97,7 +108,8 @@ func TestMATLABManager_StartMATLABSession_MATLABServicesError(t *testing.T) {
 	ctx := t.Context()
 
 	startRequest := entities.LocalSessionDetails{
-		MATLABRoot: matlabRoot,
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
 	}
 
 	// Act
@@ -129,8 +141,13 @@ func TestMATLABManager_StartMATLABSession_ClientFactoryError(t *testing.T) {
 	sessionCleanupFunc := func() error { return nil }
 	expectedError := assert.AnError
 
+	localSessionDetails := datatypes.LocalSessionDetails{
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
+	}
+
 	mockMATLABServices.EXPECT().
-		StartLocalMATLABSession(mock.Anything, datatypes.LocalSessionDetails{MATLABRoot: matlabRoot}).
+		StartLocalMATLABSession(mock.Anything, localSessionDetails).
 		Return(connectionDetails, sessionCleanupFunc, nil).
 		Once()
 
@@ -143,7 +160,8 @@ func TestMATLABManager_StartMATLABSession_ClientFactoryError(t *testing.T) {
 	ctx := t.Context()
 
 	startRequest := entities.LocalSessionDetails{
-		MATLABRoot: matlabRoot,
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
 	}
 
 	// Act

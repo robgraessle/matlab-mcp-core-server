@@ -38,10 +38,182 @@ func TestGlobalMATLAB_Client_HappyPath(t *testing.T) {
 	mockPreferredMATLABStartingDir := ""
 
 	mockLocalSessionDetails := entities.LocalSessionDetails{
-		MATLABRoot:        mockPreferredMATLABRoot,
-		StartingDirectory: mockPreferredMATLABStartingDir,
-		ShowMATLABDesktop: true,
+		MATLABRoot:             mockPreferredMATLABRoot,
+		IsStartingDirectorySet: false,
+		StartingDirectory:      mockPreferredMATLABStartingDir,
+		ShowMATLABDesktop:      true,
 	}
+
+	mockMATLABRootSelector.EXPECT().
+		SelectFirstMATLABVersionOnPath(ctx, mockLogger.AsMockArg()).
+		Return(mockPreferredMATLABRoot, nil).
+		Once()
+
+	mockMATLABStartingDirSelector.EXPECT().
+		SelectMatlabStartingDir().
+		Return(mockPreferredMATLABStartingDir, nil).
+		Once()
+
+	mockMATLABManager.EXPECT().
+		StartMATLABSession(mock.Anything, mockLogger.AsMockArg(), mockLocalSessionDetails).
+		Return(sessionID, nil).
+		Once()
+
+	mockMATLABManager.EXPECT().
+		GetMATLABSessionClient(ctx, mockLogger.AsMockArg(), sessionID).
+		Return(mockSessionClient, nil).
+		Once()
+
+	globalMATLABSession := globalmatlab.New(
+		mockMATLABManager,
+		mockMATLABRootSelector,
+		mockMATLABStartingDirSelector,
+	)
+
+	require.NotNil(t, globalMATLABSession)
+
+	// Act
+	client, err := globalMATLABSession.Client(ctx, mockLogger)
+
+	// Assert
+	require.NoError(t, err)
+	assert.Equal(t, mockSessionClient, client)
+}
+
+func TestGlobalMATLAB_Client_StartingDirectorySet(t *testing.T) {
+	// Arrange
+	mockLogger := testutils.NewInspectableLogger()
+
+	mockMATLABManager := &mocks.MockMATLABManager{}
+	defer mockMATLABManager.AssertExpectations(t)
+
+	mockMATLABRootSelector := &mocks.MockMATLABRootSelector{}
+	defer mockMATLABRootSelector.AssertExpectations(t)
+
+	mockMATLABStartingDirSelector := &mocks.MockMATLABStartingDirSelector{}
+	defer mockMATLABStartingDirSelector.AssertExpectations(t)
+
+	mockSessionClient := &entitiesmocks.MockMATLABSessionClient{}
+
+	ctx := t.Context()
+	sessionID := entities.SessionID(123)
+	mockPreferredMATLABRoot := "/some/matlab/root"
+	mockPreferredMATLABStartingDir := "/some/starting/dir"
+
+	mockLocalSessionDetails := entities.LocalSessionDetails{
+		MATLABRoot:             mockPreferredMATLABRoot,
+		IsStartingDirectorySet: true,
+		StartingDirectory:      mockPreferredMATLABStartingDir,
+		ShowMATLABDesktop:      true,
+	}
+
+	mockMATLABRootSelector.EXPECT().
+		SelectFirstMATLABVersionOnPath(ctx, mockLogger.AsMockArg()).
+		Return(mockPreferredMATLABRoot, nil).
+		Once()
+
+	mockMATLABStartingDirSelector.EXPECT().
+		SelectMatlabStartingDir().
+		Return(mockPreferredMATLABStartingDir, nil).
+		Once()
+
+	mockMATLABManager.EXPECT().
+		StartMATLABSession(mock.Anything, mockLogger.AsMockArg(), mockLocalSessionDetails).
+		Return(sessionID, nil).
+		Once()
+
+	mockMATLABManager.EXPECT().
+		GetMATLABSessionClient(ctx, mockLogger.AsMockArg(), sessionID).
+		Return(mockSessionClient, nil).
+		Once()
+
+	globalMATLABSession := globalmatlab.New(
+		mockMATLABManager,
+		mockMATLABRootSelector,
+		mockMATLABStartingDirSelector,
+	)
+
+	require.NotNil(t, globalMATLABSession)
+
+	// Act
+	client, err := globalMATLABSession.Client(ctx, mockLogger)
+
+	// Assert
+	require.NoError(t, err)
+	assert.Equal(t, mockSessionClient, client)
+}
+
+func TestGlobalMATLAB_Client_SelectFirstMATLABVersionOnPathError(t *testing.T) {
+	// Arrange
+	mockLogger := testutils.NewInspectableLogger()
+
+	mockMATLABManager := &mocks.MockMATLABManager{}
+	defer mockMATLABManager.AssertExpectations(t)
+
+	mockMATLABRootSelector := &mocks.MockMATLABRootSelector{}
+	defer mockMATLABRootSelector.AssertExpectations(t)
+
+	mockMATLABStartingDirSelector := &mocks.MockMATLABStartingDirSelector{}
+	defer mockMATLABStartingDirSelector.AssertExpectations(t)
+
+	ctx := t.Context()
+	expectedError := assert.AnError
+
+	mockMATLABRootSelector.EXPECT().
+		SelectFirstMATLABVersionOnPath(ctx, mockLogger.AsMockArg()).
+		Return("", expectedError).
+		Once()
+
+	globalMATLABSession := globalmatlab.New(
+		mockMATLABManager,
+		mockMATLABRootSelector,
+		mockMATLABStartingDirSelector,
+	)
+
+	// Act
+	client, err := globalMATLABSession.Client(ctx, mockLogger)
+
+	// Assert
+	require.ErrorIs(t, err, expectedError)
+	assert.Nil(t, client)
+}
+
+func TestGlobalMATLAB_Client_MATLABStartingDirSelectionError(t *testing.T) {
+	// Arrange
+	mockLogger := testutils.NewInspectableLogger()
+
+	mockMATLABManager := &mocks.MockMATLABManager{}
+	defer mockMATLABManager.AssertExpectations(t)
+
+	mockMATLABRootSelector := &mocks.MockMATLABRootSelector{}
+	defer mockMATLABRootSelector.AssertExpectations(t)
+
+	mockMATLABStartingDirSelector := &mocks.MockMATLABStartingDirSelector{}
+	defer mockMATLABStartingDirSelector.AssertExpectations(t)
+
+	mockSessionClient := &entitiesmocks.MockMATLABSessionClient{}
+
+	ctx := t.Context()
+	sessionID := entities.SessionID(123)
+	expectedError := assert.AnError
+
+	mockPreferredMATLABRoot := "/some/matlab/root"
+
+	mockLocalSessionDetails := entities.LocalSessionDetails{
+		MATLABRoot:             mockPreferredMATLABRoot,
+		IsStartingDirectorySet: false,
+		ShowMATLABDesktop:      true,
+	}
+
+	mockMATLABRootSelector.EXPECT().
+		SelectFirstMATLABVersionOnPath(ctx, mockLogger.AsMockArg()).
+		Return(mockPreferredMATLABRoot, nil).
+		Once()
+
+	mockMATLABStartingDirSelector.EXPECT().
+		SelectMatlabStartingDir().
+		Return("", expectedError).
+		Once()
 
 	mockMATLABManager.EXPECT().
 		StartMATLABSession(mock.Anything, mockLogger.AsMockArg(), mockLocalSessionDetails).
@@ -90,10 +262,21 @@ func TestGlobalMATLAB_Client_StartMATLABSessionError(t *testing.T) {
 	mockPreferredMATLABStartingDir := ""
 
 	mockLocalSessionDetails := entities.LocalSessionDetails{
-		MATLABRoot:        mockPreferredMATLABRoot,
-		StartingDirectory: mockPreferredMATLABStartingDir,
-		ShowMATLABDesktop: true,
+		MATLABRoot:             mockPreferredMATLABRoot,
+		IsStartingDirectorySet: false,
+		StartingDirectory:      mockPreferredMATLABStartingDir,
+		ShowMATLABDesktop:      true,
 	}
+
+	mockMATLABRootSelector.EXPECT().
+		SelectFirstMATLABVersionOnPath(ctx, mockLogger.AsMockArg()).
+		Return(mockPreferredMATLABRoot, nil).
+		Once()
+
+	mockMATLABStartingDirSelector.EXPECT().
+		SelectMatlabStartingDir().
+		Return(mockPreferredMATLABStartingDir, nil).
+		Once()
 
 	mockMATLABManager.EXPECT().
 		StartMATLABSession(mock.Anything, mockLogger, mockLocalSessionDetails).
@@ -134,10 +317,21 @@ func TestGlobalMATLAB_Client_GetMATLABSessionClientError(t *testing.T) {
 	expectedError := assert.AnError
 
 	mockLocalSessionDetails := entities.LocalSessionDetails{
-		MATLABRoot:        mockPreferredMATLABRoot,
-		StartingDirectory: mockPreferredMATLABStartingDir,
-		ShowMATLABDesktop: true,
+		MATLABRoot:             mockPreferredMATLABRoot,
+		IsStartingDirectorySet: false,
+		StartingDirectory:      mockPreferredMATLABStartingDir,
+		ShowMATLABDesktop:      true,
 	}
+
+	mockMATLABRootSelector.EXPECT().
+		SelectFirstMATLABVersionOnPath(ctx, mockLogger.AsMockArg()).
+		Return(mockPreferredMATLABRoot, nil).
+		Once()
+
+	mockMATLABStartingDirSelector.EXPECT().
+		SelectMatlabStartingDir().
+		Return(mockPreferredMATLABStartingDir, nil).
+		Once()
 
 	mockMATLABManager.EXPECT().
 		StartMATLABSession(mock.Anything, mockLogger.AsMockArg(), mockLocalSessionDetails).
@@ -163,7 +357,7 @@ func TestGlobalMATLAB_Client_GetMATLABSessionClientError(t *testing.T) {
 	assert.Nil(t, client)
 }
 
-func TestGlobalMATLAB_Client_ReturnsStartMATLABCachedErrorFromInitialize(t *testing.T) {
+func TestGlobalMATLAB_Client_ReturnsInitializeCachedErrorOnSubsequentClientCalls(t *testing.T) {
 	// Arrange
 	mockLogger := testutils.NewInspectableLogger()
 
@@ -177,27 +371,70 @@ func TestGlobalMATLAB_Client_ReturnsStartMATLABCachedErrorFromInitialize(t *test
 	defer mockMATLABStartingDirSelector.AssertExpectations(t)
 
 	ctx := t.Context()
-	matlabRoot := ""
-	startingDir := ""
 	expectedError := assert.AnError
 
+	globalMATLABSession := globalmatlab.New(
+		mockMATLABManager,
+		mockMATLABRootSelector,
+		mockMATLABStartingDirSelector,
+	)
+
 	mockMATLABRootSelector.EXPECT().
-		SelectFirstMATLABVersionOnPath(ctx, mockLogger).
-		Return(matlabRoot, nil).
+		SelectFirstMATLABVersionOnPath(ctx, mockLogger.AsMockArg()).
+		Return("", expectedError).
+		Once()
+
+	// Act
+	client1, err1 := globalMATLABSession.Client(ctx, mockLogger)
+	client2, err2 := globalMATLABSession.Client(ctx, mockLogger)
+
+	// Assert
+	assert.Nil(t, client1)
+	require.ErrorIs(t, err1, expectedError)
+
+	assert.Nil(t, client2)
+	require.ErrorIs(t, err2, expectedError)
+}
+
+func TestGlobalMATLAB_Client_ReturnsMATLABStartupCachedErrorOnSubsequentClientCalls(t *testing.T) {
+	// Arrange
+	mockLogger := testutils.NewInspectableLogger()
+
+	mockMATLABManager := &mocks.MockMATLABManager{}
+	defer mockMATLABManager.AssertExpectations(t)
+
+	mockMATLABRootSelector := &mocks.MockMATLABRootSelector{}
+	defer mockMATLABRootSelector.AssertExpectations(t)
+
+	mockMATLABStartingDirSelector := &mocks.MockMATLABStartingDirSelector{}
+	defer mockMATLABStartingDirSelector.AssertExpectations(t)
+
+	ctx := t.Context()
+	const sessionIDThatShouldBeUnused = entities.SessionID(0)
+	mockPreferredMATLABRoot := ""
+	mockPreferredMATLABStartingDir := ""
+	expectedError := assert.AnError
+
+	mockLocalSessionDetails := entities.LocalSessionDetails{
+		MATLABRoot:             mockPreferredMATLABRoot,
+		IsStartingDirectorySet: false,
+		StartingDirectory:      mockPreferredMATLABStartingDir,
+		ShowMATLABDesktop:      true,
+	}
+
+	mockMATLABRootSelector.EXPECT().
+		SelectFirstMATLABVersionOnPath(ctx, mockLogger.AsMockArg()).
+		Return(mockPreferredMATLABRoot, nil).
 		Once()
 
 	mockMATLABStartingDirSelector.EXPECT().
 		SelectMatlabStartingDir().
-		Return(startingDir, nil).
+		Return(mockPreferredMATLABStartingDir, nil).
 		Once()
 
 	mockMATLABManager.EXPECT().
-		StartMATLABSession(ctx, mockLogger, entities.LocalSessionDetails{
-			MATLABRoot:        matlabRoot,
-			StartingDirectory: startingDir,
-			ShowMATLABDesktop: true,
-		}).
-		Return(entities.SessionID(0), expectedError).
+		StartMATLABSession(mock.Anything, mockLogger, mockLocalSessionDetails).
+		Return(sessionIDThatShouldBeUnused, expectedError).
 		Once()
 
 	globalMATLABSession := globalmatlab.New(
@@ -205,50 +442,6 @@ func TestGlobalMATLAB_Client_ReturnsStartMATLABCachedErrorFromInitialize(t *test
 		mockMATLABRootSelector,
 		mockMATLABStartingDirSelector,
 	)
-
-	err := globalMATLABSession.Initialize(ctx, mockLogger)
-	require.ErrorIs(t, err, expectedError)
-
-	// Act
-	client, err := globalMATLABSession.Client(ctx, mockLogger)
-
-	// Assert
-	assert.Nil(t, client)
-	require.ErrorIs(t, err, expectedError)
-}
-
-func TestGlobalMATLAB_Client_ReturnsCachedErrorOnSubsequentClientCalls(t *testing.T) {
-	// Arrange
-	mockLogger := testutils.NewInspectableLogger()
-
-	mockMATLABManager := &mocks.MockMATLABManager{}
-	defer mockMATLABManager.AssertExpectations(t)
-
-	mockMATLABRootSelector := &mocks.MockMATLABRootSelector{}
-	defer mockMATLABRootSelector.AssertExpectations(t)
-
-	mockMATLABStartingDirSelector := &mocks.MockMATLABStartingDirSelector{}
-	defer mockMATLABStartingDirSelector.AssertExpectations(t)
-
-	ctx := t.Context()
-	matlabRoot := ""
-	startingDir := ""
-	expectedError := assert.AnError
-
-	globalMATLABSession := globalmatlab.New(
-		mockMATLABManager,
-		mockMATLABRootSelector,
-		mockMATLABStartingDirSelector,
-	)
-
-	mockMATLABManager.EXPECT().
-		StartMATLABSession(ctx, mockLogger, entities.LocalSessionDetails{
-			MATLABRoot:        matlabRoot,
-			StartingDirectory: startingDir,
-			ShowMATLABDesktop: true,
-		}).
-		Return(entities.SessionID(0), expectedError).
-		Once()
 
 	// Act
 	client1, err1 := globalMATLABSession.Client(ctx, mockLogger)
@@ -283,9 +476,10 @@ func TestGlobalMATLAB_Client_ConcurrentCallsWaitForCompletion(t *testing.T) {
 	mockSessionID := entities.SessionID(123)
 
 	expectedLocalSessionDetails := entities.LocalSessionDetails{
-		MATLABRoot:        expectedSelectedMATLABRoot,
-		StartingDirectory: expectedMATLABStartingDir,
-		ShowMATLABDesktop: true,
+		MATLABRoot:             expectedSelectedMATLABRoot,
+		IsStartingDirectorySet: false,
+		StartingDirectory:      expectedMATLABStartingDir,
+		ShowMATLABDesktop:      true,
 	}
 
 	blockStartMATLAB := make(chan struct{})
@@ -298,6 +492,16 @@ func TestGlobalMATLAB_Client_ConcurrentCallsWaitForCompletion(t *testing.T) {
 
 	firstCallCompleted := make(chan clientResult)
 	secondCallCompleted := make(chan clientResult)
+
+	mockMATLABRootSelector.EXPECT().
+		SelectFirstMATLABVersionOnPath(ctx, mockLogger.AsMockArg()).
+		Return(expectedSelectedMATLABRoot, nil).
+		Once()
+
+	mockMATLABStartingDirSelector.EXPECT().
+		SelectMatlabStartingDir().
+		Return(expectedMATLABStartingDir, nil).
+		Once()
 
 	mockMATLABManager.EXPECT().
 		StartMATLABSession(ctx, mockLogger, expectedLocalSessionDetails).
@@ -354,100 +558,4 @@ func TestGlobalMATLAB_Client_ConcurrentCallsWaitForCompletion(t *testing.T) {
 
 	require.NoError(t, result2.err)
 	assert.Equal(t, mockSessionClient, result2.client)
-}
-
-func TestGlobalMATLAB_Client_WaitUntilInitializeFinish(t *testing.T) {
-	// Arrange
-	mockLogger := testutils.NewInspectableLogger()
-
-	mockMATLABManager := &mocks.MockMATLABManager{}
-	defer mockMATLABManager.AssertExpectations(t)
-
-	mockMATLABRootSelector := &mocks.MockMATLABRootSelector{}
-	defer mockMATLABRootSelector.AssertExpectations(t)
-
-	mockMATLABStartingDirSelector := &mocks.MockMATLABStartingDirSelector{}
-	defer mockMATLABStartingDirSelector.AssertExpectations(t)
-
-	mockSessionClient := &entitiesmocks.MockMATLABSessionClient{}
-
-	ctx := t.Context()
-	expectedSelectedMATLABRoot := "/mock/matlab/path"
-	expectedMATLABStartingDir := "/home/myuser"
-	mockSessionID := entities.SessionID(123)
-
-	expectedLocalSessionDetails := entities.LocalSessionDetails{
-		MATLABRoot:        expectedSelectedMATLABRoot,
-		StartingDirectory: expectedMATLABStartingDir,
-		ShowMATLABDesktop: true,
-	}
-
-	blockStartMATLAB := make(chan struct{})
-	startMATLABCalled := make(chan struct{})
-
-	type clientResult struct {
-		client entities.MATLABSessionClient
-		err    error
-	}
-
-	firstCallCompleted := make(chan error)
-	secondCallCompleted := make(chan clientResult)
-
-	mockMATLABRootSelector.EXPECT().
-		SelectFirstMATLABVersionOnPath(ctx, mockLogger).
-		Return(expectedSelectedMATLABRoot, nil).
-		Once()
-
-	mockMATLABStartingDirSelector.EXPECT().
-		SelectMatlabStartingDir().
-		Return(expectedMATLABStartingDir, nil).
-		Once()
-
-	mockMATLABManager.EXPECT().
-		StartMATLABSession(ctx, mockLogger, expectedLocalSessionDetails).
-		Run(func(ctx context.Context, logger entities.Logger, details entities.SessionDetails) {
-			close(startMATLABCalled)
-			<-blockStartMATLAB
-		}).
-		Return(mockSessionID, nil).
-		Once()
-
-	mockMATLABManager.EXPECT().
-		GetMATLABSessionClient(ctx, mockLogger, mockSessionID).
-		Return(mockSessionClient, nil).
-		Once()
-
-	globalMATLABSession := globalmatlab.New(
-		mockMATLABManager,
-		mockMATLABRootSelector,
-		mockMATLABStartingDirSelector,
-	)
-
-	// Act
-	go func() {
-		firstCallCompleted <- globalMATLABSession.Initialize(ctx, mockLogger)
-	}()
-
-	<-startMATLABCalled
-
-	go func() {
-		client, err := globalMATLABSession.Client(ctx, mockLogger)
-		secondCallCompleted <- clientResult{client: client, err: err}
-	}()
-
-	select {
-	case <-secondCallCompleted:
-		t.Fatal("Client call completed before Initialized")
-	case <-time.After(100 * time.Millisecond):
-		// client call is still waiting
-	}
-
-	close(blockStartMATLAB)
-	result := <-secondCallCompleted
-
-	// Assert
-	require.NoError(t, <-firstCallCompleted)
-
-	require.NoError(t, result.err)
-	assert.Equal(t, mockSessionClient, result.client)
 }

@@ -33,8 +33,10 @@ func Handler(usecase Usecase) basetool.HandlerWithStructuredContentOutput[Args, 
 		defer sessionLogger.Info("Done - Executing Start MATLAB Session tool")
 
 		startSessionRequest := entities.LocalSessionDetails{
-			MATLABRoot: inputs.MATLABRoot,
+			MATLABRoot:             inputs.MATLABRoot,
+			IsStartingDirectorySet: false,
 		}
+
 		response, err := usecase.Execute(ctx, sessionLogger, startSessionRequest)
 		if err != nil {
 			return ReturnArgs{}, err

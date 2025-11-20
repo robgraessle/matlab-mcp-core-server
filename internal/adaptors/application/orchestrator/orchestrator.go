@@ -37,7 +37,7 @@ type OSSignaler interface {
 }
 
 type GlobalMATLAB interface {
-	Initialize(ctx context.Context, logger entities.Logger) error
+	Client(ctx context.Context, logger entities.Logger) (entities.MATLABSessionClient, error)
 }
 
 type Directory interface {
@@ -115,7 +115,7 @@ func (o *Orchestrator) StartAndWaitForCompletion(ctx context.Context) error {
 	}()
 
 	if o.config.UseSingleMATLABSession() {
-		err := o.globalMATLAB.Initialize(ctx, o.loggerFactory.GetGlobalLogger())
+		_, err := o.globalMATLAB.Client(ctx, o.loggerFactory.GetGlobalLogger())
 		if err != nil {
 			logger.WithError(err).Warn("MATLAB global initialization failed")
 		}

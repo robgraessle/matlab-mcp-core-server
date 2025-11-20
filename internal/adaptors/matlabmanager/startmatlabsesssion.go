@@ -21,9 +21,10 @@ func (m *MATLABManager) StartMATLABSession(ctx context.Context, sessionLogger en
 		// For now, we return embedded connector details, to decouple the session start logic from the client creation.
 		embeddedConnectorEndpoint, sessionCleanup, err := m.matlabServices.StartLocalMATLABSession(sessionLogger,
 			datatypes.LocalSessionDetails{
-				MATLABRoot:        request.MATLABRoot,
-				StartingDirectory: request.StartingDirectory,
-				ShowMATLABDesktop: request.ShowMATLABDesktop,
+				MATLABRoot:             request.MATLABRoot,
+				IsStartingDirectorySet: request.IsStartingDirectorySet,
+				StartingDirectory:      request.StartingDirectory,
+				ShowMATLABDesktop:      request.ShowMATLABDesktop,
 			},
 		)
 		if err != nil {

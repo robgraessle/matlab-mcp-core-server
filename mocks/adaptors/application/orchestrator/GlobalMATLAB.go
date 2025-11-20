@@ -38,36 +38,47 @@ func (_m *MockGlobalMATLAB) EXPECT() *MockGlobalMATLAB_Expecter {
 	return &MockGlobalMATLAB_Expecter{mock: &_m.Mock}
 }
 
-// Initialize provides a mock function for the type MockGlobalMATLAB
-func (_mock *MockGlobalMATLAB) Initialize(ctx context.Context, logger entities.Logger) error {
+// Client provides a mock function for the type MockGlobalMATLAB
+func (_mock *MockGlobalMATLAB) Client(ctx context.Context, logger entities.Logger) (entities.MATLABSessionClient, error) {
 	ret := _mock.Called(ctx, logger)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Initialize")
+		panic("no return value specified for Client")
 	}
 
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, entities.Logger) error); ok {
+	var r0 entities.MATLABSessionClient
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, entities.Logger) (entities.MATLABSessionClient, error)); ok {
+		return returnFunc(ctx, logger)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, entities.Logger) entities.MATLABSessionClient); ok {
 		r0 = returnFunc(ctx, logger)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(entities.MATLABSessionClient)
+		}
 	}
-	return r0
+	if returnFunc, ok := ret.Get(1).(func(context.Context, entities.Logger) error); ok {
+		r1 = returnFunc(ctx, logger)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
 }
 
-// MockGlobalMATLAB_Initialize_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Initialize'
-type MockGlobalMATLAB_Initialize_Call struct {
+// MockGlobalMATLAB_Client_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Client'
+type MockGlobalMATLAB_Client_Call struct {
 	*mock.Call
 }
 
-// Initialize is a helper method to define mock.On call
+// Client is a helper method to define mock.On call
 //   - ctx context.Context
 //   - logger entities.Logger
-func (_e *MockGlobalMATLAB_Expecter) Initialize(ctx interface{}, logger interface{}) *MockGlobalMATLAB_Initialize_Call {
-	return &MockGlobalMATLAB_Initialize_Call{Call: _e.mock.On("Initialize", ctx, logger)}
+func (_e *MockGlobalMATLAB_Expecter) Client(ctx interface{}, logger interface{}) *MockGlobalMATLAB_Client_Call {
+	return &MockGlobalMATLAB_Client_Call{Call: _e.mock.On("Client", ctx, logger)}
 }
 
-func (_c *MockGlobalMATLAB_Initialize_Call) Run(run func(ctx context.Context, logger entities.Logger)) *MockGlobalMATLAB_Initialize_Call {
+func (_c *MockGlobalMATLAB_Client_Call) Run(run func(ctx context.Context, logger entities.Logger)) *MockGlobalMATLAB_Client_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -85,12 +96,12 @@ func (_c *MockGlobalMATLAB_Initialize_Call) Run(run func(ctx context.Context, lo
 	return _c
 }
 
-func (_c *MockGlobalMATLAB_Initialize_Call) Return(err error) *MockGlobalMATLAB_Initialize_Call {
-	_c.Call.Return(err)
+func (_c *MockGlobalMATLAB_Client_Call) Return(mATLABSessionClient entities.MATLABSessionClient, err error) *MockGlobalMATLAB_Client_Call {
+	_c.Call.Return(mATLABSessionClient, err)
 	return _c
 }
 
-func (_c *MockGlobalMATLAB_Initialize_Call) RunAndReturn(run func(ctx context.Context, logger entities.Logger) error) *MockGlobalMATLAB_Initialize_Call {
+func (_c *MockGlobalMATLAB_Client_Call) RunAndReturn(run func(ctx context.Context, logger entities.Logger) (entities.MATLABSessionClient, error)) *MockGlobalMATLAB_Client_Call {
 	_c.Call.Return(run)
 	return _c
 }

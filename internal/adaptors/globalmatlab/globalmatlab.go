@@ -28,10 +28,11 @@ type GlobalMATLAB struct {
 	matlabStartingDirSelector MATLABStartingDirSelector
 
 	lock              *sync.Mutex
+	initializeOnce    *sync.Once
 	matlabRoot        string
 	matlabStartingDir string
 	sessionID         entities.SessionID
-	cachedStartErr    error
+	cachedStartupErr  error
 }
 
 func New(
@@ -44,32 +45,28 @@ func New(
 		matlabRootSelector:        matlabRootSelector,
 		matlabStartingDirSelector: matlabStartingDirSelector,
 
-		lock: &sync.Mutex{},
+		lock:           &sync.Mutex{},
+		initializeOnce: &sync.Once{},
 	}
-}
-
-func (g *GlobalMATLAB) Initialize(ctx context.Context, logger entities.Logger) error {
-	var err error
-	g.matlabRoot, err = g.matlabRootSelector.SelectFirstMATLABVersionOnPath(ctx, logger)
-	if err != nil {
-		return err
-	}
-
-	g.matlabStartingDir, err = g.matlabStartingDirSelector.SelectMatlabStartingDir()
-	if err != nil {
-		logger.WithError(err).Warn("failed to determine MATLAB starting directory, proceeding without one")
-	}
-
-	err = g.ensureMATLABClientIsValid(ctx, logger)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (g *GlobalMATLAB) Client(ctx context.Context, logger entities.Logger) (entities.MATLABSessionClient, error) {
-	if err := g.ensureMATLABClientIsValid(ctx, logger); err != nil {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
+	g.initializeOnce.Do(func() {
+		err := g.initializeMATLABStartupVariables(ctx, logger)
+		if err != nil {
+			g.cachedStartupErr = err
+		}
+	})
+
+	if g.cachedStartupErr != nil {
+		return nil, g.cachedStartupErr
+	}
+
+	if err := g.ensureMATLABSessionIsReady(ctx, logger); err != nil {
+		g.cachedStartupErr = err
 		return nil, err
 	}
 
@@ -81,28 +78,40 @@ func (g *GlobalMATLAB) Client(ctx context.Context, logger entities.Logger) (enti
 	return client, nil
 }
 
-func (g *GlobalMATLAB) ensureMATLABClientIsValid(ctx context.Context, logger entities.Logger) error {
-	g.lock.Lock()
-	defer g.lock.Unlock()
-
-	if g.cachedStartErr != nil {
-		return g.cachedStartErr
-	}
+func (g *GlobalMATLAB) ensureMATLABSessionIsReady(ctx context.Context, logger entities.Logger) error {
 
 	var sessionIDZeroValue entities.SessionID
 	if g.sessionID == sessionIDZeroValue {
 		sessionID, err := g.matlabManager.StartMATLABSession(ctx, logger, entities.LocalSessionDetails{
-			MATLABRoot:        g.matlabRoot,
-			StartingDirectory: g.matlabStartingDir,
-			ShowMATLABDesktop: true,
+			MATLABRoot:             g.matlabRoot,
+			IsStartingDirectorySet: g.matlabStartingDir != "",
+			StartingDirectory:      g.matlabStartingDir,
+			ShowMATLABDesktop:      true,
 		})
 		if err != nil {
-			g.cachedStartErr = err
 			return err
 		}
 
 		g.sessionID = sessionID
 	}
 
+	return nil
+}
+
+func (g *GlobalMATLAB) initializeMATLABStartupVariables(ctx context.Context, logger entities.Logger) error {
+	matlabRoot, err := g.matlabRootSelector.SelectFirstMATLABVersionOnPath(ctx, logger)
+	if err != nil {
+		return err
+	}
+
+	g.matlabRoot = matlabRoot
+
+	matlabStartingDirectory, err := g.matlabStartingDirSelector.SelectMatlabStartingDir()
+	if err != nil {
+		logger.WithError(err).Warn("failed to determine MATLAB starting directory, proceeding without one")
+		return nil
+	}
+
+	g.matlabStartingDir = matlabStartingDirectory
 	return nil
 }

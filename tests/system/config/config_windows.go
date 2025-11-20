@@ -4,5 +4,5 @@ package config
 
 const (
 	MATLABMCPCoreServerBinariesFilename = "matlab-mcp-core-server.exe"
-	OSDescriptor                    = "win64"
+	OSDescriptor                        = "win64"
 )

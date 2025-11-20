@@ -141,7 +141,8 @@ func TestStarter_StartLocalMATLABSession_HappyPath(t *testing.T) {
 	)
 
 	request := datatypes.LocalSessionDetails{
-		MATLABRoot: matlabRoot,
+		IsStartingDirectorySet: false,
+		MATLABRoot:             matlabRoot,
 	}
 
 	// Act
@@ -254,9 +255,10 @@ func TestStarter_StartLocalMATLABSession_WithStartingDirectory(t *testing.T) {
 	)
 
 	request := datatypes.LocalSessionDetails{
-		MATLABRoot:        matlabRoot,
-		StartingDirectory: startingDir,
-		ShowMATLABDesktop: showDesktop,
+		MATLABRoot:             matlabRoot,
+		StartingDirectory:      startingDir,
+		IsStartingDirectorySet: true,
+		ShowMATLABDesktop:      showDesktop,
 	}
 
 	// Act
@@ -302,9 +304,10 @@ func TestStarter_StartLocalMATLABSession_DirectoryFactoryCreateError(t *testing.
 	)
 
 	request := datatypes.LocalSessionDetails{
-		MATLABRoot:        "/usr/local/MATLAB/R2024b",
-		StartingDirectory: "/home/user/workspace",
-		ShowMATLABDesktop: false,
+		MATLABRoot:             "/usr/local/MATLAB/R2024b",
+		StartingDirectory:      "/home/user/workspace",
+		IsStartingDirectorySet: true,
+		ShowMATLABDesktop:      false,
 	}
 
 	// Act
@@ -393,7 +396,8 @@ func TestStarter_StartLocalMATLABSession_MATLABProcessLauncherError(t *testing.T
 	)
 
 	request := datatypes.LocalSessionDetails{
-		MATLABRoot: matlabRoot,
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
 	}
 
 	// Act
@@ -498,9 +502,10 @@ func TestStarter_StartLocalMATLABSession_RegisterProcessPIDWithWatchdogError(t *
 	)
 
 	request := datatypes.LocalSessionDetails{
-		MATLABRoot:        matlabRoot,
-		StartingDirectory: startingDir,
-		ShowMATLABDesktop: showDesktop,
+		MATLABRoot:             matlabRoot,
+		StartingDirectory:      startingDir,
+		IsStartingDirectorySet: true,
+		ShowMATLABDesktop:      showDesktop,
 	}
 
 	// Act
@@ -617,7 +622,8 @@ func TestStarter_StartLocalMATLABSession_GetEmbeddedConnectorDetailsError(t *tes
 	)
 
 	request := datatypes.LocalSessionDetails{
-		MATLABRoot: matlabRoot,
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
 	}
 
 	// Act
@@ -726,7 +732,8 @@ func TestStarter_StartLocalMATLABSession_CleanupReturnsSessionCleanupError(t *te
 	)
 
 	request := datatypes.LocalSessionDetails{
-		MATLABRoot: matlabRoot,
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
 	}
 
 	_, cleanup, err := starter.StartLocalMATLABSession(mockLogger, request)

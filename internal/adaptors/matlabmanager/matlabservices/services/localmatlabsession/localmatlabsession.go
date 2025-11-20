@@ -63,7 +63,7 @@ func (m *Starter) StartLocalMATLABSession(logger entities.Logger, request dataty
 	logger = logger.With("session_dir", sessionDirPath)
 	logger.Debug("Created session directory")
 
-	if request.StartingDirectory == "" {
+	if !request.IsStartingDirectorySet {
 		request.StartingDirectory = sessionDirPath
 	}
 

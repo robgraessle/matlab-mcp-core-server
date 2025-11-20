@@ -30,9 +30,10 @@ type SessionDetails interface {
 }
 
 type LocalSessionDetails struct {
-	MATLABRoot        string
-	StartingDirectory string
-	ShowMATLABDesktop bool
+	MATLABRoot             string
+	IsStartingDirectorySet bool
+	StartingDirectory      string
+	ShowMATLABDesktop      bool
 }
 
 func (l LocalSessionDetails) interfacelock() {}

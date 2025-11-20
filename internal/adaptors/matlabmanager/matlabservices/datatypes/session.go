@@ -5,7 +5,8 @@ package datatypes
 type SessionID int
 
 type LocalSessionDetails struct {
-	MATLABRoot        string
-	StartingDirectory string
-	ShowMATLABDesktop bool
+	MATLABRoot             string
+	IsStartingDirectorySet bool
+	StartingDirectory      string
+	ShowMATLABDesktop      bool
 }

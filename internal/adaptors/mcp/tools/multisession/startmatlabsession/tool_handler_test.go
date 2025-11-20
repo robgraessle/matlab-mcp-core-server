@@ -55,8 +55,13 @@ func TestTool_Handler_HappyPath(t *testing.T) {
 		AddOnsOutput: expectedAddOnsOutput,
 	}
 
+	localSessionDetails := entities.LocalSessionDetails{
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
+	}
+
 	mockUsecase.EXPECT().
-		Execute(ctx, mockLogger.AsMockArg(), entities.LocalSessionDetails{MATLABRoot: matlabRoot}).
+		Execute(ctx, mockLogger.AsMockArg(), localSessionDetails).
 		Return(expectedResponse, nil).
 		Once()
 
@@ -85,8 +90,13 @@ func TestTool_Handler_UsecaseError(t *testing.T) {
 	const matlabRoot = "/path/to/matlab"
 	expectedError := assert.AnError
 
+	localSessionDetails := entities.LocalSessionDetails{
+		MATLABRoot:             matlabRoot,
+		IsStartingDirectorySet: false,
+	}
+
 	mockUsecase.EXPECT().
-		Execute(ctx, mockLogger.AsMockArg(), entities.LocalSessionDetails{MATLABRoot: matlabRoot}).
+		Execute(ctx, mockLogger.AsMockArg(), localSessionDetails).
 		Return(startmatlabsessionusecase.ReturnArgs{}, expectedError).
 		Once()
 
