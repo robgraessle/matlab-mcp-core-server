@@ -15,9 +15,14 @@ import (
 )
 
 type expectedConfig struct {
-	disableTelemetry       bool
-	useSingleMATLABSession bool
-	logLevel               entities.LogLevel
+	versionMode                      bool
+	disableTelemetry                 bool
+	useSingleMATLABSession           bool
+	logLevel                         entities.LogLevel
+	preferredLocalMATLABRoot         string
+	preferredMATLABStartingDirectory string
+	baseDirectory                    string
+	watchdogMode                     bool
 }
 
 func TestNew_HappyPath(t *testing.T) {
@@ -30,18 +35,37 @@ func TestNew_HappyPath(t *testing.T) {
 			name: "default values",
 			args: []string{},
 			expected: expectedConfig{
-				disableTelemetry:       false,
-				useSingleMATLABSession: true,
-				logLevel:               entities.LogLevelInfo,
+				versionMode:                      false,
+				disableTelemetry:                 false,
+				useSingleMATLABSession:           true,
+				logLevel:                         entities.LogLevelInfo,
+				preferredLocalMATLABRoot:         "",
+				preferredMATLABStartingDirectory: "",
+				baseDirectory:                    "",
+				watchdogMode:                     false,
 			},
 		},
 		{
 			name: "custom values",
-			args: []string{"--disable-telemetry", "--use-single-matlab-session=false", "--log-level=debug"},
+			args: []string{
+				"--version=true",
+				"--disable-telemetry",
+				"--use-single-matlab-session=false",
+				"--log-level=debug",
+				"--matlab-root=/root",
+				"--initial-working-folder=/pref",
+				"--log-folder=/logs",
+				"--watchdog=true",
+			},
 			expected: expectedConfig{
-				disableTelemetry:       true,
-				useSingleMATLABSession: false,
-				logLevel:               entities.LogLevelDebug,
+				versionMode:                      true,
+				disableTelemetry:                 true,
+				useSingleMATLABSession:           false,
+				logLevel:                         entities.LogLevelDebug,
+				preferredLocalMATLABRoot:         "/root",
+				preferredMATLABStartingDirectory: "/pref",
+				baseDirectory:                    "/logs",
+				watchdogMode:                     true,
 			},
 		},
 	}
@@ -64,9 +88,14 @@ func TestNew_HappyPath(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, cfg, "Config should not be nil")
 
+			assert.Equal(t, testConfig.expected.versionMode, cfg.VersionMode())
 			assert.Equal(t, testConfig.expected.disableTelemetry, cfg.DisableTelemetry())
 			assert.Equal(t, testConfig.expected.useSingleMATLABSession, cfg.UseSingleMATLABSession())
 			assert.Equal(t, testConfig.expected.logLevel, cfg.LogLevel())
+			assert.Equal(t, testConfig.expected.preferredLocalMATLABRoot, cfg.PreferredLocalMATLABRoot())
+			assert.Equal(t, testConfig.expected.preferredMATLABStartingDirectory, cfg.PreferredMATLABStartingDirectory())
+			assert.Equal(t, testConfig.expected.baseDirectory, cfg.BaseDir())
+			assert.Equal(t, testConfig.expected.watchdogMode, cfg.WatchdogMode())
 		})
 	}
 }
@@ -352,6 +381,47 @@ func TestConfig_PreferredMATLABStartingDirectory_HappyPath(t *testing.T) {
 
 			// Act
 			result := cfg.PreferredMATLABStartingDirectory()
+
+			// Assert
+			assert.Equal(t, testConfig.expected, result)
+		})
+	}
+}
+
+func TestConfig_LogDirectory_HappyPath(t *testing.T) {
+	testConfigs := []struct {
+		name     string
+		args     []string
+		expected string
+	}{
+		{
+			name:     "default value",
+			args:     []string{},
+			expected: "",
+		},
+		{
+			name:     "Supplied log directory",
+			args:     []string{"--log-folder=/logs"},
+			expected: "/logs",
+		},
+	}
+
+	for _, testConfig := range testConfigs {
+		t.Run(testConfig.name, func(t *testing.T) {
+			// Arrange
+			mockOSLayer := &configmocks.MockOSLayer{}
+			defer mockOSLayer.AssertExpectations(t)
+
+			mockOSLayer.EXPECT().
+				Args().
+				Return(append([]string{"testprocess"}, testConfig.args...)).
+				Once()
+
+			cfg, err := config.New(mockOSLayer)
+			require.NoError(t, err)
+
+			// Act
+			result := cfg.BaseDir()
 
 			// Assert
 			assert.Equal(t, testConfig.expected, result)

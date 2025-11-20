@@ -24,6 +24,7 @@ type Config struct {
 	logLevel                         entities.LogLevel
 	preferredLocalMATLABRoot         string
 	preferredMATLABStartingDirectory string
+	baseDirectory                    string
 	watchdogMode                     bool
 }
 
@@ -75,6 +76,10 @@ func (c *Config) PreferredLocalMATLABRoot() string {
 
 func (c *Config) PreferredMATLABStartingDirectory() string {
 	return c.preferredMATLABStartingDirectory
+}
+
+func (c *Config) BaseDir() string {
+	return c.baseDirectory
 }
 
 func (c *Config) WatchdogMode() bool {

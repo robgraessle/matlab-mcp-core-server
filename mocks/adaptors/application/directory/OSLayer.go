@@ -5,6 +5,9 @@
 package mocks
 
 import (
+	"os"
+
+	"github.com/matlab/matlab-mcp-core-server/internal/facades/osfacade"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -33,6 +36,125 @@ type MockOSLayer_Expecter struct {
 
 func (_m *MockOSLayer) EXPECT() *MockOSLayer_Expecter {
 	return &MockOSLayer_Expecter{mock: &_m.Mock}
+}
+
+// Create provides a mock function for the type MockOSLayer
+func (_mock *MockOSLayer) Create(name string) (osfacade.File, error) {
+	ret := _mock.Called(name)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Create")
+	}
+
+	var r0 osfacade.File
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(string) (osfacade.File, error)); ok {
+		return returnFunc(name)
+	}
+	if returnFunc, ok := ret.Get(0).(func(string) osfacade.File); ok {
+		r0 = returnFunc(name)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(osfacade.File)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
+		r1 = returnFunc(name)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockOSLayer_Create_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Create'
+type MockOSLayer_Create_Call struct {
+	*mock.Call
+}
+
+// Create is a helper method to define mock.On call
+//   - name string
+func (_e *MockOSLayer_Expecter) Create(name interface{}) *MockOSLayer_Create_Call {
+	return &MockOSLayer_Create_Call{Call: _e.mock.On("Create", name)}
+}
+
+func (_c *MockOSLayer_Create_Call) Run(run func(name string)) *MockOSLayer_Create_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockOSLayer_Create_Call) Return(file osfacade.File, err error) *MockOSLayer_Create_Call {
+	_c.Call.Return(file, err)
+	return _c
+}
+
+func (_c *MockOSLayer_Create_Call) RunAndReturn(run func(name string) (osfacade.File, error)) *MockOSLayer_Create_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// MkdirAll provides a mock function for the type MockOSLayer
+func (_mock *MockOSLayer) MkdirAll(name string, perm os.FileMode) error {
+	ret := _mock.Called(name, perm)
+
+	if len(ret) == 0 {
+		panic("no return value specified for MkdirAll")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(string, os.FileMode) error); ok {
+		r0 = returnFunc(name, perm)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockOSLayer_MkdirAll_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'MkdirAll'
+type MockOSLayer_MkdirAll_Call struct {
+	*mock.Call
+}
+
+// MkdirAll is a helper method to define mock.On call
+//   - name string
+//   - perm os.FileMode
+func (_e *MockOSLayer_Expecter) MkdirAll(name interface{}, perm interface{}) *MockOSLayer_MkdirAll_Call {
+	return &MockOSLayer_MkdirAll_Call{Call: _e.mock.On("MkdirAll", name, perm)}
+}
+
+func (_c *MockOSLayer_MkdirAll_Call) Run(run func(name string, perm os.FileMode)) *MockOSLayer_MkdirAll_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		var arg1 os.FileMode
+		if args[1] != nil {
+			arg1 = args[1].(os.FileMode)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockOSLayer_MkdirAll_Call) Return(err error) *MockOSLayer_MkdirAll_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockOSLayer_MkdirAll_Call) RunAndReturn(run func(name string, perm os.FileMode) error) *MockOSLayer_MkdirAll_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // MkdirTemp provides a mock function for the type MockOSLayer

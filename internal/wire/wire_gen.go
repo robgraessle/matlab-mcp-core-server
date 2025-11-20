@@ -12,6 +12,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/application/lifecyclesignaler"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/application/modeselector"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/application/orchestrator"
+	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/filesystem/files"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/matlabrootselector"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/matlabstartingdirselector"
@@ -84,11 +85,12 @@ func initializeOrchestrator() (*orchestrator.Orchestrator, error) {
 		return nil, err
 	}
 	mcpServer := server.NewMCPSDKServer(configConfig)
-	directoryDirectory, err := directory.New(osFacade)
+	factory := files.NewFactory(osFacade)
+	directoryDirectory, err := directory.New(configConfig, factory, osFacade)
 	if err != nil {
 		return nil, err
 	}
-	factory, err := logger.NewFactory(configConfig, directoryDirectory, osFacade)
+	loggerFactory, err := logger.NewFactory(configConfig, directoryDirectory, factory, osFacade)
 	if err != nil {
 		return nil, err
 	}
@@ -101,46 +103,46 @@ func initializeOrchestrator() (*orchestrator.Orchestrator, error) {
 	directoryFactory := directorymanager.NewFactory(osFacade, directoryDirectory, matlabFiles)
 	processDetails := processdetails.New(osFacade)
 	matlabProcessLauncher := processlauncher.New()
-	processProcess, err := process.New(osFacade, factory)
+	processProcess, err := process.New(osFacade, loggerFactory)
 	if err != nil {
 		return nil, err
 	}
 	transportFactory := transport.NewFactory()
-	watchdogWatchdog := watchdog.New(processProcess, transportFactory, factory)
+	watchdogWatchdog := watchdog.New(processProcess, transportFactory, loggerFactory)
 	starter := localmatlabsession.NewStarter(directoryFactory, processDetails, matlabProcessLauncher, watchdogWatchdog)
 	matlabServices := matlabservices.New(matlabLocator, starter)
-	store := matlabsessionstore.New(factory, lifecycleSignaler)
+	store := matlabsessionstore.New(loggerFactory, lifecycleSignaler)
 	httpClientFactory := httpclientfactory.New()
 	matlabsessionclientFactory := matlabsessionclient.NewFactory(httpClientFactory)
 	matlabManager := matlabmanager.New(matlabServices, store, matlabsessionclientFactory)
 	usecase := listavailablematlabs.New(matlabManager)
-	tool := listavailablematlabs2.New(factory, usecase)
+	tool := listavailablematlabs2.New(loggerFactory, usecase)
 	startmatlabsessionUsecase := startmatlabsession.New(matlabManager)
-	startmatlabsessionTool := startmatlabsession2.New(factory, startmatlabsessionUsecase)
+	startmatlabsessionTool := startmatlabsession2.New(loggerFactory, startmatlabsessionUsecase)
 	stopmatlabsessionUsecase := stopmatlabsession.New(matlabManager)
-	stopmatlabsessionTool := stopmatlabsession2.New(factory, stopmatlabsessionUsecase)
+	stopmatlabsessionTool := stopmatlabsession2.New(loggerFactory, stopmatlabsessionUsecase)
 	pathValidator := pathvalidator.New(osFacade)
 	evalmatlabcodeUsecase := evalmatlabcode.New(pathValidator)
-	evalmatlabcodeTool := evalmatlabcode2.New(factory, evalmatlabcodeUsecase, matlabManager)
+	evalmatlabcodeTool := evalmatlabcode2.New(loggerFactory, evalmatlabcodeUsecase, matlabManager)
 	matlabRootSelector := matlabrootselector.New(configConfig, matlabManager)
 	matlabStartingDirSelector := matlabstartingdirselector.New(configConfig, osFacade)
 	globalMATLAB := globalmatlab.New(matlabManager, matlabRootSelector, matlabStartingDirSelector)
-	tool2 := evalmatlabcode3.New(factory, evalmatlabcodeUsecase, globalMATLAB)
+	tool2 := evalmatlabcode3.New(loggerFactory, evalmatlabcodeUsecase, globalMATLAB)
 	checkmatlabcodeUsecase := checkmatlabcode.New(pathValidator)
-	checkmatlabcodeTool := checkmatlabcode2.New(factory, checkmatlabcodeUsecase, globalMATLAB)
+	checkmatlabcodeTool := checkmatlabcode2.New(loggerFactory, checkmatlabcodeUsecase, globalMATLAB)
 	detectmatlabtoolboxesUsecase := detectmatlabtoolboxes.New()
-	detectmatlabtoolboxesTool := detectmatlabtoolboxes2.New(factory, detectmatlabtoolboxesUsecase, globalMATLAB)
+	detectmatlabtoolboxesTool := detectmatlabtoolboxes2.New(loggerFactory, detectmatlabtoolboxesUsecase, globalMATLAB)
 	runmatlabfileUsecase := runmatlabfile.New(pathValidator)
-	runmatlabfileTool := runmatlabfile2.New(factory, runmatlabfileUsecase, globalMATLAB)
+	runmatlabfileTool := runmatlabfile2.New(loggerFactory, runmatlabfileUsecase, globalMATLAB)
 	runmatlabtestfileUsecase := runmatlabtestfile.New(pathValidator)
-	runmatlabtestfileTool := runmatlabtestfile2.New(factory, runmatlabtestfileUsecase, globalMATLAB)
+	runmatlabtestfileTool := runmatlabtestfile2.New(loggerFactory, runmatlabtestfileUsecase, globalMATLAB)
 	configuratorConfigurator := configurator.New(configConfig, tool, startmatlabsessionTool, stopmatlabsessionTool, evalmatlabcodeTool, tool2, checkmatlabcodeTool, detectmatlabtoolboxesTool, runmatlabfileTool, runmatlabtestfileTool)
-	serverServer, err := server.New(mcpServer, factory, lifecycleSignaler, configuratorConfigurator)
+	serverServer, err := server.New(mcpServer, loggerFactory, lifecycleSignaler, configuratorConfigurator)
 	if err != nil {
 		return nil, err
 	}
 	osSignaler := ossignaler.New()
-	orchestratorOrchestrator := orchestrator.New(lifecycleSignaler, configConfig, serverServer, watchdogWatchdog, factory, osSignaler, globalMATLAB, directoryDirectory)
+	orchestratorOrchestrator := orchestrator.New(lifecycleSignaler, configConfig, serverServer, watchdogWatchdog, loggerFactory, osSignaler, globalMATLAB, directoryDirectory)
 	return orchestratorOrchestrator, nil
 }
 

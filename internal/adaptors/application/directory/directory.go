@@ -2,44 +2,93 @@
 
 package directory
 
-import "github.com/matlab/matlab-mcp-core-server/internal/entities"
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
-const defaultLogDirPattern = "matlab-mcp-core-server-"
+	"github.com/matlab/matlab-mcp-core-server/internal/entities"
+	"github.com/matlab/matlab-mcp-core-server/internal/facades/osfacade"
+)
+
+const (
+	defaultLogDirPattern = "matlab-mcp-core-server-"
+	markerFileName       = ".matlab-mcp-core-server"
+)
+
+type Config interface {
+	BaseDir() string
+}
+
+type FilenameFactory interface {
+	CreateFileWithUniqueSuffix(baseName string, ext string) (string, string, error)
+}
 
 type OSLayer interface {
 	MkdirTemp(dir string, pattern string) (string, error)
+	MkdirAll(name string, perm os.FileMode) error
+	Create(name string) (osfacade.File, error)
 }
 
 type Directory struct {
-	logDir string
+	baseDir string
+	id      string
 
 	osFacade OSLayer
 }
 
 func New(
+	config Config,
+	filenameFactory FilenameFactory,
 	osFacade OSLayer,
 ) (*Directory, error) {
-	logDir, err := osFacade.MkdirTemp("", defaultLogDirPattern)
+	baseDir := config.BaseDir()
+
+	if baseDir == "" {
+		var err error
+		if baseDir, err = osFacade.MkdirTemp("", defaultLogDirPattern); err != nil {
+			return nil, err
+		}
+	} else {
+		if err := osFacade.MkdirAll(baseDir, 0o700); err != nil {
+			return nil, err
+		}
+	}
+
+	_, id, err := filenameFactory.CreateFileWithUniqueSuffix(filepath.Join(baseDir, markerFileName), "")
 	if err != nil {
 		return nil, err
 	}
 
 	return &Directory{
-		logDir:   logDir,
+		baseDir: baseDir,
+		id:      id,
+
 		osFacade: osFacade,
 	}, nil
 }
 
 func (d *Directory) BaseDir() string {
-	return d.logDir
+	return d.baseDir
 }
 
-func (d *Directory) MkdirTemp(pattern string) (string, error) {
-	return d.osFacade.MkdirTemp(d.logDir, pattern)
+func (d *Directory) ID() string {
+	return d.id
+}
+
+func (d *Directory) CreateSubDir(pattern string) (string, error) {
+	if !strings.HasSuffix(pattern, "-") {
+		pattern = fmt.Sprintf("%s-", pattern)
+	}
+
+	pattern = fmt.Sprintf("%s%s-", pattern, d.id)
+
+	return d.osFacade.MkdirTemp(d.baseDir, pattern)
 }
 
 func (d *Directory) RecordToLogger(logger entities.Logger) {
 	logger.
-		With("log-dir", d.logDir).
+		With("log-dir", d.baseDir).
 		Info("Application directory state")
 }

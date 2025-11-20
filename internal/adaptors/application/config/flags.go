@@ -25,6 +25,9 @@ const (
 	preferredMATLABStartingDirectory             = "initial-working-folder"
 	preferredMATLABStartingDirectoryDefaultValue = ""
 
+	baseDir             = "log-folder"
+	baseDirDefaultValue = ""
+
 	logLevel             = "log-level"
 	logLevelDefaultValue = "info"
 
@@ -54,7 +57,12 @@ func setupFlags(flagSet *pflag.FlagSet) error {
 	)
 
 	flagSet.String(preferredMATLABStartingDirectory, preferredMATLABStartingDirectoryDefaultValue,
-		fmt.Sprintf("When %s is true, if this is set, defines which starting directory MATLAB will use. If not set, MATLAB will use the default MATLAB's starting directory.", useSingleMATLABSession))
+		fmt.Sprintf("When %s is true, if this is set, defines which startup folder MATLAB will use. If not set, MATLAB will use the default MATLAB's startup folder.", useSingleMATLABSession),
+	)
+
+	flagSet.String(baseDir, baseDirDefaultValue,
+		"The folder where log files will be stored. If not set, logs will be stored in a unique folder in the OS temp folder.",
+	)
 
 	// Hidden flags, for internal use only
 	flagSet.Bool(watchdogMode, watchdogModeDefaultValue,
@@ -111,6 +119,11 @@ func createConfigWithFlagValues(osLayer OSLayer, flagSet *pflag.FlagSet, args []
 		return nil, err
 	}
 
+	baseDir, err := flagSet.GetString(baseDir)
+	if err != nil {
+		return nil, err
+	}
+
 	watchdogMode, err := flagSet.GetBool(watchdogMode)
 	if err != nil {
 		return nil, err
@@ -125,6 +138,7 @@ func createConfigWithFlagValues(osLayer OSLayer, flagSet *pflag.FlagSet, args []
 		logLevel:                         entities.LogLevel(logLevel),
 		preferredLocalMATLABRoot:         preferredLocalMATLABRoot,
 		preferredMATLABStartingDirectory: preferredMATLABStartingDirectory,
+		baseDirectory:                    baseDir,
 		watchdogMode:                     watchdogMode,
 	}, nil
 }

@@ -35,12 +35,12 @@ func (_m *MockApplicationDirectory) EXPECT() *MockApplicationDirectory_Expecter 
 	return &MockApplicationDirectory_Expecter{mock: &_m.Mock}
 }
 
-// MkdirTemp provides a mock function for the type MockApplicationDirectory
-func (_mock *MockApplicationDirectory) MkdirTemp(pattern string) (string, error) {
+// CreateSubDir provides a mock function for the type MockApplicationDirectory
+func (_mock *MockApplicationDirectory) CreateSubDir(pattern string) (string, error) {
 	ret := _mock.Called(pattern)
 
 	if len(ret) == 0 {
-		panic("no return value specified for MkdirTemp")
+		panic("no return value specified for CreateSubDir")
 	}
 
 	var r0 string
@@ -61,18 +61,18 @@ func (_mock *MockApplicationDirectory) MkdirTemp(pattern string) (string, error)
 	return r0, r1
 }
 
-// MockApplicationDirectory_MkdirTemp_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'MkdirTemp'
-type MockApplicationDirectory_MkdirTemp_Call struct {
+// MockApplicationDirectory_CreateSubDir_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateSubDir'
+type MockApplicationDirectory_CreateSubDir_Call struct {
 	*mock.Call
 }
 
-// MkdirTemp is a helper method to define mock.On call
+// CreateSubDir is a helper method to define mock.On call
 //   - pattern string
-func (_e *MockApplicationDirectory_Expecter) MkdirTemp(pattern interface{}) *MockApplicationDirectory_MkdirTemp_Call {
-	return &MockApplicationDirectory_MkdirTemp_Call{Call: _e.mock.On("MkdirTemp", pattern)}
+func (_e *MockApplicationDirectory_Expecter) CreateSubDir(pattern interface{}) *MockApplicationDirectory_CreateSubDir_Call {
+	return &MockApplicationDirectory_CreateSubDir_Call{Call: _e.mock.On("CreateSubDir", pattern)}
 }
 
-func (_c *MockApplicationDirectory_MkdirTemp_Call) Run(run func(pattern string)) *MockApplicationDirectory_MkdirTemp_Call {
+func (_c *MockApplicationDirectory_CreateSubDir_Call) Run(run func(pattern string)) *MockApplicationDirectory_CreateSubDir_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 string
 		if args[0] != nil {
@@ -85,12 +85,12 @@ func (_c *MockApplicationDirectory_MkdirTemp_Call) Run(run func(pattern string))
 	return _c
 }
 
-func (_c *MockApplicationDirectory_MkdirTemp_Call) Return(s string, err error) *MockApplicationDirectory_MkdirTemp_Call {
+func (_c *MockApplicationDirectory_CreateSubDir_Call) Return(s string, err error) *MockApplicationDirectory_CreateSubDir_Call {
 	_c.Call.Return(s, err)
 	return _c
 }
 
-func (_c *MockApplicationDirectory_MkdirTemp_Call) RunAndReturn(run func(pattern string) (string, error)) *MockApplicationDirectory_MkdirTemp_Call {
+func (_c *MockApplicationDirectory_CreateSubDir_Call) RunAndReturn(run func(pattern string) (string, error)) *MockApplicationDirectory_CreateSubDir_Call {
 	_c.Call.Return(run)
 	return _c
 }

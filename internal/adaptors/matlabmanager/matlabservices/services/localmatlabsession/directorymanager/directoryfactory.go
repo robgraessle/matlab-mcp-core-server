@@ -12,7 +12,7 @@ import (
 )
 
 type ApplicationDirectory interface {
-	MkdirTemp(pattern string) (string, error)
+	CreateSubDir(pattern string) (string, error)
 }
 
 type OSLayer interface {
@@ -55,7 +55,7 @@ func NewFactory(
 }
 
 func (f *DirectoryFactory) Create(logger entities.Logger) (Directory, error) {
-	sessionDir, err := f.applicationDirectory.MkdirTemp("matlab-session-")
+	sessionDir, err := f.applicationDirectory.CreateSubDir("matlab-session-")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temporary session directory: %w", err)
 	}

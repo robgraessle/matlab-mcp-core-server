@@ -18,8 +18,9 @@ import (
 const defaultGlobalLogLevel slog.Level = slog.LevelDebug
 
 const (
-	logFileName         = "server.log"
-	watchdogLogFileName = "watchdog.log"
+	logFileName         = "server"
+	watchdogLogFileName = "watchdog"
+	logFileExt          = ".log"
 )
 
 type Config interface {
@@ -28,6 +29,11 @@ type Config interface {
 
 type Directory interface {
 	BaseDir() string
+	ID() string
+}
+
+type FilenameFactory interface {
+	FilenameWithSuffix(fileName string, ext string, suffix string) string
 }
 
 type OSLayer interface {
@@ -49,6 +55,7 @@ type Factory struct {
 func NewFactory(
 	config Config,
 	directory Directory,
+	filenameFactory FilenameFactory,
 	osLayer OSLayer,
 ) (*Factory, error) {
 	logLevel, err := parseLogLevel(config.LogLevel())
@@ -57,13 +64,18 @@ func NewFactory(
 	}
 
 	baseDir := directory.BaseDir()
+	id := directory.ID()
 
-	logFile, err := osLayer.Create(filepath.Join(baseDir, logFileName))
+	logFilePath := filenameFactory.FilenameWithSuffix(filepath.Join(baseDir, logFileName), logFileExt, id)
+
+	logFile, err := osLayer.Create(logFilePath)
 	if err != nil {
 		return nil, err
 	}
 
-	watchdogLogFile, err := osLayer.Create(filepath.Join(baseDir, watchdogLogFileName))
+	watchdogFilePath := filenameFactory.FilenameWithSuffix(filepath.Join(baseDir, watchdogLogFileName), logFileExt, id)
+
+	watchdogLogFile, err := osLayer.Create(watchdogFilePath)
 	if err != nil {
 		return nil, err
 	}

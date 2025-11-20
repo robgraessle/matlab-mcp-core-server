@@ -84,6 +84,11 @@ func (osw *OsFacade) Mkdir(name string, perm os.FileMode) error {
 	return os.Mkdir(name, perm)
 }
 
+// MkdirAll wraps the os.MkdirAll function to create a directory.
+func (osw *OsFacade) MkdirAll(name string, perm os.FileMode) error {
+	return os.MkdirAll(name, perm)
+}
+
 // RemoveAll wraps the os.RemoveAll function to create a delete a directory and its children.
 func (osw *OsFacade) RemoveAll(path string) error {
 	return os.RemoveAll(path)
@@ -107,6 +112,16 @@ func (osw *OsFacade) UserHomeDir() (string, error) {
 // Create wraps the os.Create function to create a file.
 func (osw *OsFacade) Create(name string) (File, error) {
 	file, err := os.Create(name) //nolint:gosec // Intentional os.Create usage in facade
+	if err != nil {
+		return nil, err
+	}
+
+	return &FileWrapper{file}, nil
+}
+
+// CreateTemp wraps the os.CreateTemp function to create a file with a unique suffix.
+func (osw *OsFacade) CreateTemp(dir string, pattern string) (File, error) {
+	file, err := os.CreateTemp(dir, pattern)
 	if err != nil {
 		return nil, err
 	}

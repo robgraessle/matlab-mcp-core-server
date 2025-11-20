@@ -50,7 +50,7 @@ func TestDirectoryFactory_Create_HappyPath(t *testing.T) {
 	packageDir := filepath.Join(sessionDir, "+matlab_mcp")
 
 	mockApplicationDirectory.EXPECT().
-		MkdirTemp(mock.AnythingOfType("string")).
+		CreateSubDir(mock.AnythingOfType("string")).
 		Return(sessionDir, nil).
 		Once()
 
@@ -106,7 +106,7 @@ func TestDirectoryFactory_Create_MkdirTempError(t *testing.T) {
 	expectedError := assert.AnError
 
 	mockApplicationDirectory.EXPECT().
-		MkdirTemp(mock.AnythingOfType("string")).
+		CreateSubDir(mock.AnythingOfType("string")).
 		Return("", expectedError).
 		Once()
 
@@ -138,7 +138,7 @@ func TestDirectoryFactory_Create_PackageDirectoryMkdirError(t *testing.T) {
 	expectedError := assert.AnError
 
 	mockApplicationDirectory.EXPECT().
-		MkdirTemp(mock.AnythingOfType("string")).
+		CreateSubDir(mock.AnythingOfType("string")).
 		Return(sessionDir, nil).
 		Once()
 
@@ -175,7 +175,7 @@ func TestDirectoryFactory_Create_WriteFileError(t *testing.T) {
 	expectedError := assert.AnError
 
 	mockApplicationDirectory.EXPECT().
-		MkdirTemp(mock.AnythingOfType("string")).
+		CreateSubDir(mock.AnythingOfType("string")).
 		Return(sessionDir, nil).
 		Once()
 

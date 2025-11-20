@@ -11,6 +11,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/application/lifecyclesignaler"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/application/modeselector"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/application/orchestrator"
+	files "github.com/matlab/matlab-mcp-core-server/internal/adaptors/filesystem/files"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/matlabrootselector"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/matlabstartingdirselector"
@@ -274,15 +275,20 @@ func initializeOrchestrator() (*orchestrator.Orchestrator, error) {
 				// Low-level Interfaces
 				logger.NewFactory,
 				wire.Bind(new(logger.Config), new(*config.Config)),
-				wire.Bind(new(logger.OSLayer), new(*osfacade.OsFacade)),
 				wire.Bind(new(logger.Directory), new(*directory.Directory)),
+				wire.Bind(new(logger.FilenameFactory), new(*files.Factory)),
+				wire.Bind(new(logger.OSLayer), new(*osfacade.OsFacade)),
 				oswrapper.New,
 				wire.Bind(new(oswrapper.OSLayer), new(*osfacade.OsFacade)),
 				directory.New,
+				wire.Bind(new(directory.Config), new(*config.Config)),
+				wire.Bind(new(directory.FilenameFactory), new(*files.Factory)),
 				wire.Bind(new(directory.OSLayer), new(*osfacade.OsFacade)),
 				lifecyclesignaler.New,
 				config.New,
 				wire.Bind(new(config.OSLayer), new(*osfacade.OsFacade)),
+				files.NewFactory,
+				wire.Bind(new(files.OSLayer), new(*osfacade.OsFacade)),
 				osfacade.New,
 				iofacade.New,
 				filefacade.New,
