@@ -21,7 +21,7 @@ Run MATLAB® using AI applications with the official MATLAB MCP Server from Math
 1. Install [MATLAB (MathWorks)](https://www.mathworks.com/help/install/ug/install-products-with-internet-connection.html) 2020b or later and add it to the system PATH.
 2. For Windows or Linux, download the [Latest Release](https://github.com/matlab/matlab-mcp-core-server/releases/latest) from GitHub®. Alternatively, you can install [Go](https://go.dev/doc/install) and build the binary from source using
     ```sh
-    go install github.com/matlab/matlab-mcp-core-server/cmd/matlab-mcp-core-server
+    go install github.com/matlab/matlab-mcp-core-server/cmd/matlab-mcp-core-server@latest
     ```
 
    For macOS, first download the latest release by running the following command in your terminal:
