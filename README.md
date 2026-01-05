@@ -103,6 +103,7 @@ Customize the behavior of the server by providing arguments in the `args` array 
 | Argument | Description | Example |
 | ------------- | ------------- | ------------- |
 | matlab-root | Full path specifying which MATLAB to start. Do not include `/bin` in the path. By default, the server tries to find the first MATLAB on the system PATH. | `"--matlab-root=/home/usr/MATLAB/R2025a"` |
+| vmc-root | Full path specifying which Vitis Model Composer installation to use. Do not include `/bin` in the path. By default, the server tries to find the first Vitis Model Composer installation on the system PATH. | `"--vmc-root=/tools/Xilinx/2025.2/Model_Composer"` |
 | initialize-matlab-on-startup | To initialize MATLAB as soon as you start the server, set this argument to `true`. By default, MATLAB only starts when the first tool is called. | `"--initialize-matlab-on-startup=true"` |
 | initial-working-folder | Specify the folder where MATLAB starts and where the server generates any MATLAB scripts. If you do not provide the argument, MATLAB starts in these locations: <br><br> <ul><li>Linux: `/home/username` </li><li> Windows: `C:\Users\username\Documents`</li><li>Mac: `/Users/username/Documents`</li></ul> | `"--initial-working-folder=C:\\Users\\name\\MyProject"` |  
 | disable-telemetry | To disable anonymized data collection, set this argument to `true`. For details, see [Data Collection](#data-collection). | `"--disable-telemetry=true"`  |

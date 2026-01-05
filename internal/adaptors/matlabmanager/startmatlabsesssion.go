@@ -22,6 +22,7 @@ func (m *MATLABManager) StartMATLABSession(ctx context.Context, sessionLogger en
 		embeddedConnectorEndpoint, sessionCleanup, err := m.matlabServices.StartLocalMATLABSession(sessionLogger,
 			datatypes.LocalSessionDetails{
 				MATLABRoot:             request.MATLABRoot,
+				VMCRoot:                request.VMCRoot,
 				IsStartingDirectorySet: request.IsStartingDirectorySet,
 				StartingDirectory:      request.StartingDirectory,
 				ShowMATLABDesktop:      request.ShowMATLABDesktop,

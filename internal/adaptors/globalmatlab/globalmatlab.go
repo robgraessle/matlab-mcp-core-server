@@ -19,6 +19,10 @@ type MATLABRootSelector interface {
 	SelectMATLABRoot(ctx context.Context, logger entities.Logger) (string, error)
 }
 
+type VMCRootSelector interface {
+	SelectVMCRoot(ctx context.Context, logger entities.Logger) string
+}
+
 type MATLABStartingDirSelector interface {
 	SelectMatlabStartingDir() (string, error)
 }
@@ -26,11 +30,13 @@ type MATLABStartingDirSelector interface {
 type GlobalMATLAB struct {
 	matlabManager             MATLABManager
 	matlabRootSelector        MATLABRootSelector
+	vmcRootSelector           VMCRootSelector
 	matlabStartingDirSelector MATLABStartingDirSelector
 
 	lock              *sync.Mutex
 	initializeOnce    *sync.Once
 	matlabRoot        string
+	vmcRoot           string
 	matlabStartingDir string
 	sessionID         entities.SessionID
 	cachedStartupErr  error
@@ -39,11 +45,13 @@ type GlobalMATLAB struct {
 func New(
 	matlabManager MATLABManager,
 	matlabRootSelector MATLABRootSelector,
+	vmcRootSelector VMCRootSelector,
 	matlabStartingDirSelector MATLABStartingDirSelector,
 ) *GlobalMATLAB {
 	return &GlobalMATLAB{
 		matlabManager:             matlabManager,
 		matlabRootSelector:        matlabRootSelector,
+		vmcRootSelector:           vmcRootSelector,
 		matlabStartingDirSelector: matlabStartingDirSelector,
 
 		lock:           &sync.Mutex{},
@@ -102,6 +110,7 @@ func (g *GlobalMATLAB) getOrCreateClient(ctx context.Context, logger entities.Lo
 func (g *GlobalMATLAB) startNewSession(ctx context.Context, logger entities.Logger) error {
 	sessionID, err := g.matlabManager.StartMATLABSession(ctx, logger, entities.LocalSessionDetails{
 		MATLABRoot:             g.matlabRoot,
+		VMCRoot:                g.vmcRoot,
 		IsStartingDirectorySet: g.matlabStartingDir != "",
 		StartingDirectory:      g.matlabStartingDir,
 		ShowMATLABDesktop:      true,
@@ -121,6 +130,8 @@ func (g *GlobalMATLAB) initializeStartupConfig(ctx context.Context, logger entit
 	}
 
 	g.matlabRoot = matlabRoot
+	
+	g.vmcRoot = g.vmcRootSelector.SelectVMCRoot(ctx, logger)
 
 	matlabStartingDirectory, err := g.matlabStartingDirSelector.SelectMatlabStartingDir()
 	if err != nil {

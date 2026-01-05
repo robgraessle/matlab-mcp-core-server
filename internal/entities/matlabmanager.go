@@ -32,6 +32,7 @@ type SessionDetails interface {
 
 type LocalSessionDetails struct {
 	MATLABRoot             string
+	VMCRoot                string
 	IsStartingDirectorySet bool
 	StartingDirectory      string
 	ShowMATLABDesktop      bool

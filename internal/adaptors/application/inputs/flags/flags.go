@@ -23,6 +23,10 @@ const (
 	PreferredMATLABStartingDirectoryDefaultValue = ""
 	PreferredMATLABStartingDirectoryDescription  = "The directory to use as the initial working directory for MATLAB sessions. If not specified, the server will use the current working directory."
 
+	PreferredVMCRoot             = "vmc-root"
+	PreferredVMCRootDefaultValue = ""
+	PreferredVMCRootDescription  = "The path to the Vitis Model Composer installation to use. If not specified, the server will use the first Vitis Model Composer installation it finds."
+
 	BaseDir             = "log-folder"
 	BaseDirDefaultValue = ""
 	BaseDirDescription  = "The directory to use for log files. If not specified, the server will use the current working directory."

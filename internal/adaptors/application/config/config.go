@@ -25,6 +25,7 @@ type Config struct {
 	logLevel                         entities.LogLevel
 	preferredLocalMATLABRoot         string
 	preferredMATLABStartingDirectory string
+	preferredVMCRoot                 string
 	baseDirectory                    string
 	watchdogMode                     bool
 	serverInstanceID                 string
@@ -81,6 +82,10 @@ func (c *Config) PreferredMATLABStartingDirectory() string {
 	return c.preferredMATLABStartingDirectory
 }
 
+func (c *Config) PreferredVMCRoot() string {
+	return c.preferredVMCRoot
+}
+
 func (c *Config) BaseDir() string {
 	return c.baseDirectory
 }
@@ -104,5 +109,6 @@ func (c *Config) RecordToLogger(logger entities.Logger) {
 		With(flags.LogLevel, c.logLevel).
 		With(flags.PreferredLocalMATLABRoot, c.preferredLocalMATLABRoot).
 		With(flags.PreferredMATLABStartingDirectory, c.preferredMATLABStartingDirectory).
+		With(flags.PreferredVMCRoot, c.preferredVMCRoot).
 		Info("Configuration state")
 }

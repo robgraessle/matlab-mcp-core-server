@@ -22,7 +22,7 @@ type ProcessDetails interface {
 }
 
 type MATLABProcessLauncher interface {
-	Launch(logger entities.Logger, sessionRoot string, matlabRoot string, workingDir string, args []string, env []string) (int, func(), error)
+	Launch(logger entities.Logger, sessionRoot string, matlabRoot string, vmcRoot string, workingDir string, args []string, env []string) (int, func(), error)
 }
 
 type Watchdog interface {
@@ -80,7 +80,7 @@ func (m *Starter) StartLocalMATLABSession(logger entities.Logger, request dataty
 
 	startupFlags := m.processDetails.StartupFlag(runtime.GOOS, request.ShowMATLABDesktop, startupCode)
 
-	processID, processCleanup, err := m.matlabProcessLauncher.Launch(logger, sessionDirPath, request.MATLABRoot, request.StartingDirectory, startupFlags, env)
+	processID, processCleanup, err := m.matlabProcessLauncher.Launch(logger, sessionDirPath, request.MATLABRoot, request.VMCRoot, request.StartingDirectory, startupFlags, env)
 	if err != nil {
 		return embeddedconnector.ConnectionDetails{}, nil, err
 	}

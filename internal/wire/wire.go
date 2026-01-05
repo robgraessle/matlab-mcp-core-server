@@ -15,6 +15,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/matlabrootselector"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/matlabstartingdirselector"
+	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/vmcrootselector"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/logger"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/matlabmanager"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/matlabmanager/matlabservices"
@@ -222,12 +223,17 @@ func initializeOrchestrator() (*orchestrator.Orchestrator, error) {
 		globalmatlab.New,
 		wire.Bind(new(globalmatlab.MATLABManager), new(*matlabmanager.MATLABManager)),
 		wire.Bind(new(globalmatlab.MATLABRootSelector), new(*matlabrootselector.MATLABRootSelector)),
+		wire.Bind(new(globalmatlab.VMCRootSelector), new(*vmcrootselector.VMCRootSelector)),
 		wire.Bind(new(globalmatlab.MATLABStartingDirSelector), new(*matlabstartingdirselector.MATLABStartingDirSelector)),
 
 		// MATLAB Root Selector
 		matlabrootselector.New,
 		wire.Bind(new(matlabrootselector.Config), new(*config.Config)),
 		wire.Bind(new(matlabrootselector.MATLABManager), new(*matlabmanager.MATLABManager)),
+		
+		// VMC Root Selector
+		vmcrootselector.New,
+		wire.Bind(new(vmcrootselector.Config), new(*config.Config)),
 
 		// MATLAB Starting Dir Selector
 		matlabstartingdirselector.New,

@@ -6,6 +6,7 @@ type SessionID int
 
 type LocalSessionDetails struct {
 	MATLABRoot             string
+	VMCRoot                string
 	IsStartingDirectorySet bool
 	StartingDirectory      string
 	ShowMATLABDesktop      bool

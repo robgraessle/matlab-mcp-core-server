@@ -35,6 +35,10 @@ func setupFlags(flagSet *pflag.FlagSet) error {
 		fmt.Sprintf("When %s is true, if this is set, defines which startup folder MATLAB will use. If not set, MATLAB will use the default MATLAB's startup folder.", flags.UseSingleMATLABSession),
 	)
 
+	flagSet.String(flags.PreferredVMCRoot, flags.PreferredVMCRootDefaultValue,
+		flags.PreferredVMCRootDescription,
+	)
+
 	flagSet.String(flags.BaseDir, flags.BaseDirDefaultValue,
 		flags.BaseDirDescription,
 	)
@@ -106,6 +110,11 @@ func createConfigWithFlagValues(osLayer OSLayer, flagSet *pflag.FlagSet, args []
 		return nil, err
 	}
 
+	preferredVMCRoot, err := flagSet.GetString(flags.PreferredVMCRoot)
+	if err != nil {
+		return nil, err
+	}
+
 	baseDir, err := flagSet.GetString(flags.BaseDir)
 	if err != nil {
 		return nil, err
@@ -139,6 +148,7 @@ func createConfigWithFlagValues(osLayer OSLayer, flagSet *pflag.FlagSet, args []
 		logLevel:                         entities.LogLevel(logLevel),
 		preferredLocalMATLABRoot:         preferredLocalMATLABRoot,
 		preferredMATLABStartingDirectory: preferredMATLABStartingDirectory,
+		preferredVMCRoot:                 preferredVMCRoot,
 		baseDirectory:                    baseDir,
 		watchdogMode:                     watchdogMode,
 		serverInstanceID:                 serverInstanceID,

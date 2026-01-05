@@ -19,13 +19,13 @@ func New() *MATLABProcessLauncher {
 	return &MATLABProcessLauncher{}
 }
 
-func (l *MATLABProcessLauncher) Launch(logger entities.Logger, sessionRoot string, matlabRoot string, workingDir string, args []string, env []string) (int, func(), error) {
+func (l *MATLABProcessLauncher) Launch(logger entities.Logger, sessionRoot string, matlabRoot string, vmcRoot string, workingDir string, args []string, env []string) (int, func(), error) {
 	stdIO, stdIOCleanup, err := createLocalStdioForNewProcess(logger, sessionRoot)
 	if err != nil {
 		return 0, nil, err
 	}
 
-	process, err := startMatlab(logger, matlabRoot, workingDir, args, env, stdIO)
+	process, err := startMatlab(logger, matlabRoot, vmcRoot, workingDir, args, env, stdIO)
 	if err != nil {
 		return 0, nil, fmt.Errorf("failed to start MATLAB process: %w", err)
 	}

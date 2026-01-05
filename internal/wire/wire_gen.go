@@ -16,6 +16,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/matlabrootselector"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/matlabstartingdirselector"
+	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/globalmatlab/vmcrootselector"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/logger"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/matlabmanager"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/matlabmanager/matlabservices"
@@ -126,8 +127,9 @@ func initializeOrchestrator() (*orchestrator.Orchestrator, error) {
 	evalmatlabcodeUsecase := evalmatlabcode.New(pathValidator)
 	evalmatlabcodeTool := evalmatlabcode2.New(loggerFactory, evalmatlabcodeUsecase, matlabManager)
 	matlabRootSelector := matlabrootselector.New(configConfig, matlabManager)
+	vmcRootSelector := vmcrootselector.New(configConfig)
 	matlabStartingDirSelector := matlabstartingdirselector.New(configConfig, osFacade)
-	globalMATLAB := globalmatlab.New(matlabManager, matlabRootSelector, matlabStartingDirSelector)
+	globalMATLAB := globalmatlab.New(matlabManager, matlabRootSelector, vmcRootSelector, matlabStartingDirSelector)
 	tool2 := evalmatlabcode3.New(loggerFactory, evalmatlabcodeUsecase, globalMATLAB)
 	checkmatlabcodeUsecase := checkmatlabcode.New(pathValidator)
 	checkmatlabcodeTool := checkmatlabcode2.New(loggerFactory, checkmatlabcodeUsecase, globalMATLAB)
