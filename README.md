@@ -1,100 +1,81 @@
-# MATLAB MCP Core Server
+# Vitis Model Composer MCP Core Server
 
-Run MATLAB® using AI applications with the official MATLAB MCP Server from MathWorks®. The MATLAB MCP Core Server allows your AI applications to:
+Run Vitis Model Composer from AMD® using AI applications with this MCP Server. The Vitis Model Composer MCP Core Server allows your AI applications to:
 
-- Start and quit MATLAB.
-- Write and run MATLAB code.
-- Assess your MATLAB code for style and correctness.
+- Start and quit Vitis Model Composer (which runs MATLAB®).
+- Create Vitis Model Composer models by interacting with an AI agent.
+- Analyze and debug Vitis Model Composer models.
   
 ## Table of Contents
+  - [Building from Source](#building-from-source)
   - [Setup](#setup)
-    - [Claude Code](#claude-code)
-    - [Claude Desktop](#claude-desktop)
-    - [GitHub Copilot in Visual Studio Code](#github-copilot-in-visual-studio-code)
   - [Arguments](#arguments)
   - [Tools](#tools)
   - [Resources](#resources)
-  - [Data Collection](#data-collection)
 
-## Setup
+## Building from Source
 
-1. Install [MATLAB (MathWorks)](https://www.mathworks.com/help/install/ug/install-products-with-internet-connection.html) 2020b or later and add it to the system PATH.
-2. For Windows or Linux, download the [Latest Release](https://github.com/matlab/matlab-mcp-core-server/releases/latest) from GitHub®. Alternatively, you can install [Go](https://go.dev/doc/install) and build the binary from source using
-    ```sh
-    go install github.com/matlab/matlab-mcp-core-server/cmd/matlab-mcp-core-server@latest
-    ```
+To build the Vitis Model Composer MCP Core Server from source code on Linux:
 
-   For macOS, first download the latest release by running the following command in your terminal:
-    * For Apple silicon processors, run: 
-      ```sh
-      curl -L -o ~/Downloads/matlab-mcp-core-server https://github.com/matlab/matlab-mcp-core-server/releases/latest/download/matlab-mcp-core-server-maca64
-      ```
-    * For Intel processors, run:
-      ```sh
-      curl -L -o ~/Downloads/matlab-mcp-core-server https://github.com/matlab/matlab-mcp-core-server/releases/latest/download/matlab-mcp-core-server-maci64
-      ```
-   Then grant executable permissions to the downloaded binary so you can run the MATLAB MCP Core Server:  
+1. **Install Go** (version 1.21 or later)
+   - Download and install Go from [https://go.dev/doc/install](https://go.dev/doc/install)
+   - Verify installation:
+     ```sh
+     go version
+     ```
+
+2. **Install build dependencies**
    ```sh
-   chmod +x ~/Downloads/matlab-mcp-core-server
+   make install
    ```
- 4. Add the MATLAB MCP Core Server to your AI application. You can find instructions for adding MCP servers in the documentation of your AI application. For example instructions on using Claude Code®, Claude Desktop®, and GitHub Copilot in Visual Studio® Code, see below. Note that you can customize the server by specifying optional [Arguments](#arguments).
+   This installs required tools: wire (dependency injection), mockery (mock generation), gotestsum (test runner), and golangci-lint (linter).
 
-### Claude Code
+3. **Build the server**
+   ```sh
+   make build-for-glnxa64
+   ```
 
-In your terminal, run the following, remembering to insert the full path to the server binary you acquired in the setup:
-```sh
-claude mcp add --transport stdio matlab /fullpath/to/matlab-mcp-core-server-binary [arguments...]
-```
-You can customize the server by specifying optional [Arguments](#arguments):
-```sh
-claude mcp add --transport stdio matlab /fullpath/to/matlab-mcp-core-server-binary --initial-working-folder=/home/username/myproject
-```
+4. **Make the binary executable**
+   ```sh
+   chmod +x .bin/glnxa64/matlab-mcp-core-server
+   ```
 
-For details on adding MCP servers in Claude Code, see [Add a local stdio server (Claude Code)](https://docs.claude.com/en/docs/claude-code/mcp#option-3%3A-add-a-local-stdio-server). To remove the server later, run:
-```sh
-claude mcp remove matlab
-```
+The built binary will be located at `.bin/glnxa64/matlab-mcp-core-server`.
 
-### Claude Desktop
+## Setup for GitHub Copilot in Visual Studio Code
 
-Follow the instructions on the page [Connect to local MCP servers (MCP)](https://modelcontextprotocol.io/docs/develop/connect-local-servers) to install Node.js and the Filesystem Server. These are required to allow Claude to create files on your filesystem that MATLAB can access. In your Claude Desktop configuration file, you need to add the configuration for the MATLAB MCP Core Server as well as the Filesystem Server. You can use the combined JSON below. In the Filesystem `args`, remember to specify which paths the server can access. In the MATLAB `args`, remember to insert the full path to the server binary you acquired, as well as any other [Arguments](#arguments). (Note that on Windows, your paths require extra backslashes as escape characters).
+To add the Vitis Model Composer MCP Core Server to a workspace `mcp.json` file:
 
-```json
-{
-   "mcpServers": {
-      "filesystem": {
-         "command": "npx",
-         "args": [
-            "-y",
-            "@modelcontextprotocol/server-filesystem",
-            "C:\\Users\\username"
-         ]
-      },
-      "matlab": {
-         "command": "C:\\fullpath\\to\\matlab-mcp-core-server-binary",
-         "args": [
-            "--initial-working-folder=C:\\Users\\username\\Documents"
-         ]
-      }
+1. In VS Code, open your workspace folder.
+2. Create or open the `.vscode/mcp.json` file in your workspace. If the `.vscode` folder doesn't exist, create it first.
+3. Add the MCP server configuration to the `mcp.json` file:
+   ```json
+   {
+       "servers": {
+           "matlab": {
+               "type": "stdio",
+               "command": "/fullpath/to/matlab-mcp-core-server-binary",
+               "args": [
+                   "--vmc-root=/tools/Xilinx/2025.2/Model_Composer",
+                   "--matlab-root=/usr/local/MATLAB/R2024b"
+               ]
+           }
+       }
    }
-}
-```
-After saving the configuration file, quit Claude Desktop by clicking **File > Exit**, then restart Claude Desktop. 
+   ```
+   Remember to:
+   - Replace `/fullpath/to/matlab-mcp-core-server-binary` with the actual path to the server binary you built.
+   - Adjust the `--vmc-root` and `--matlab-root` paths to match your installation locations
+   - Add any additional [Arguments](#arguments) as needed
+   - On Windows, use double backslashes in paths (e.g., `"C:\\tools\\Xilinx\\2025.2\\Model_Composer"`)
 
-### GitHub Copilot in Visual Studio Code
+4. Save the `mcp.json` file.
+5. Start the MCP server in VS Code:
+   - Reload VS Code: Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac), type "Developer: Reload Window", and press Enter.
+   - When VS Code reloads, you will be prompted to trust the MCP server configuration. Review the configuration and click "Trust" to enable the server.
+   - Verify the server is running: Open the GitHub Copilot Chat view and check that the Vitis Model Composer tools are available in the tools picker.
 
-VS Code provides different methods to [Add an MCP Server (VS Code)](https://code.visualstudio.com/docs/copilot/customization/mcp-servers?wt.md_id=AZ-MVP-5004796#_add-an-mcp-server). MathWorks recommends you follow the steps in the section **"Add an MCP server to a workspace `mcp.json` file"**. In your `mcp.json` configuration file, add the following, remembering to insert the full path to the server binary you acquired in the setup, as well as any [Arguments](#arguments):
-```json
-{
-    "servers": {
-        "matlab": {
-            "type": "stdio",
-            "command": "/fullpath/to/matlab-mcp-core-server-binary",
-            "args": []
-        }
-    }
-}
-```
+For more information about adding MCP servers in VS Code, see [Add an MCP Server (VS Code)](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
 
 ## Arguments
 
@@ -102,11 +83,10 @@ Customize the behavior of the server by providing arguments in the `args` array 
 
 | Argument | Description | Example |
 | ------------- | ------------- | ------------- |
-| matlab-root | Full path specifying which MATLAB to start. Do not include `/bin` in the path. By default, the server tries to find the first MATLAB on the system PATH. | `"--matlab-root=/home/usr/MATLAB/R2025a"` |
-| vmc-root | Full path specifying which Vitis Model Composer installation to use. Do not include `/bin` in the path. By default, the server tries to find the first Vitis Model Composer installation on the system PATH. | `"--vmc-root=/tools/Xilinx/2025.2/Model_Composer"` |
-| initialize-matlab-on-startup | To initialize MATLAB as soon as you start the server, set this argument to `true`. By default, MATLAB only starts when the first tool is called. | `"--initialize-matlab-on-startup=true"` |
-| initial-working-folder | Specify the folder where MATLAB starts and where the server generates any MATLAB scripts. If you do not provide the argument, MATLAB starts in these locations: <br><br> <ul><li>Linux: `/home/username` </li><li> Windows: `C:\Users\username\Documents`</li><li>Mac: `/Users/username/Documents`</li></ul> | `"--initial-working-folder=C:\\Users\\name\\MyProject"` |  
-| disable-telemetry | To disable anonymized data collection, set this argument to `true`. For details, see [Data Collection](#data-collection). | `"--disable-telemetry=true"`  |
+| vmc-root | **Required for Vitis Model Composer.** Full path specifying which Vitis Model Composer installation to use. Do not include `/bin` in the path. When specified, the server launches Vitis Model Composer instead of MATLAB directly. | `"--vmc-root=/tools/Xilinx/2025.2/Model_Composer"` |
+| matlab-root | Full path specifying which MATLAB to use. Do not include `/bin` in the path. Required when using `--vmc-root`. By default, the server tries to find the first MATLAB on the system PATH. | `"--matlab-root=/home/usr/MATLAB/R2025a"` |
+| initialize-matlab-on-startup | To initialize Vitis Model Composer (or MATLAB) as soon as you start the server, set this argument to `true`. By default, it only starts when the first tool is called. | `"--initialize-matlab-on-startup=true"` |
+| initial-working-folder | Specify the folder where MATLAB starts and where the server generates any MATLAB scripts. If you do not provide the argument, MATLAB starts in these locations: <br><br> <ul><li>Linux: `/home/username` </li><li> Windows: `C:\Users\username\Documents`</li><li>Mac: `/Users/username/Documents`</li></ul> | `"--initial-working-folder=C:\\Users\\name\\MyProject"` |
 
 ## Tools
 
@@ -142,15 +122,12 @@ The MCP server provides a [Resource (MCP)](https://modelcontextprotocol.io/speci
    - MIME Type: `text/markdown`
    - Source: [MATLAB Coding Standards (GitHub)](https://github.com/matlab/rules/blob/main/matlab-coding-standards.md)
 
-## Data Collection
-
-The MATLAB MCP Core Server may collect fully anonymized information about your usage of the server and send it to MathWorks. This data collection helps MathWorks improve products and is on by default. To opt out of data collection, set the argument `--disable-telemetry` to `true`.
-
 # 
-When using the MATLAB MCP Core Server, you should thoroughly review and validate all tool calls before you run them. Always keep a human in the loop for important actions and only proceed once you are confident the call will do exactly what you expect. For more information, see [User Interaction Model (MCP)](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#user-interaction-model) and [Security Considerations (MCP)](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#security-considerations).
+When using the Vitis Model Composer MCP Core Server, you should thoroughly review and validate all tool calls before you run them. Always keep a human in the loop for important actions and only proceed once you are confident the call will do exactly what you expect. For more information, see [User Interaction Model (MCP)](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#user-interaction-model) and [Security Considerations (MCP)](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#security-considerations).
 
 ---
 
-Copyright 2025 The MathWorks, Inc.
+Copyright 2026 Advanced Micro Devices, Inc.
+based on [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server): Copyright 2025 The MathWorks, Inc.]
 
 ----
