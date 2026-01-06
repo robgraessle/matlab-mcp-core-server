@@ -15,10 +15,6 @@ func setupFlags(flagSet *pflag.FlagSet) error {
 		flags.VersionDescription,
 	)
 
-	flagSet.Bool(flags.DisableTelemetry, flags.DisableTelemetryDefaultValue,
-		flags.DisableTelemetryDescription,
-	)
-
 	flagSet.Bool(flags.UseSingleMATLABSession, flags.UseSingleMATLABSessionDefaultValue,
 		flags.UseSingleMATLABSessionDescription,
 	)
@@ -74,11 +70,6 @@ func createConfigWithFlagValues(osLayer OSLayer, flagSet *pflag.FlagSet, args []
 	}
 
 	versionMode, err := flagSet.GetBool(flags.VersionMode)
-	if err != nil {
-		return nil, err
-	}
-
-	disableTelemetry, err := flagSet.GetBool(flags.DisableTelemetry)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +134,6 @@ func createConfigWithFlagValues(osLayer OSLayer, flagSet *pflag.FlagSet, args []
 		osLayer: osLayer,
 
 		versionMode:                      versionMode,
-		disableTelemetry:                 disableTelemetry,
 		useSingleMATLABSession:           useSingleMATLABSession,
 		logLevel:                         entities.LogLevel(logLevel),
 		preferredLocalMATLABRoot:         preferredLocalMATLABRoot,

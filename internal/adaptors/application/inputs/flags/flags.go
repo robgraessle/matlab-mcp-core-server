@@ -7,10 +7,6 @@ const (
 	VersionModeDefaultValue = false
 	VersionDescription      = "Display the version of the MATLAB MCP Core Server."
 
-	DisableTelemetry             = "disable-telemetry"
-	DisableTelemetryDefaultValue = false
-	DisableTelemetryDescription  = "Disable collection of usage data. By default, this software may collect information about you and your usage and send it to MathWorks. This data helps us improve our products and services."
-
 	UseSingleMATLABSession             = "use-single-matlab-session"
 	UseSingleMATLABSessionDefaultValue = true
 	UseSingleMATLABSessionDescription  = "When true, a MATLAB session is started when a MATLAB MCP Core Server starts, and stopped when the server is shut down. When false, the server can manage multiple MATLAB sessions."

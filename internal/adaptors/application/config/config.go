@@ -20,7 +20,6 @@ type Config struct {
 	osLayer OSLayer
 
 	versionMode                      bool
-	disableTelemetry                 bool
 	useSingleMATLABSession           bool
 	logLevel                         entities.LogLevel
 	preferredLocalMATLABRoot         string
@@ -62,10 +61,6 @@ func (c *Config) VersionMode() bool {
 	return c.versionMode
 }
 
-func (c *Config) DisableTelemetry() bool {
-	return c.disableTelemetry
-}
-
 func (c *Config) UseSingleMATLABSession() bool {
 	return c.useSingleMATLABSession
 }
@@ -104,7 +99,6 @@ func (c *Config) InitializeMATLABOnStartup() bool {
 
 func (c *Config) RecordToLogger(logger entities.Logger) {
 	logger.
-		With(flags.DisableTelemetry, c.disableTelemetry).
 		With(flags.UseSingleMATLABSession, c.useSingleMATLABSession).
 		With(flags.LogLevel, c.logLevel).
 		With(flags.PreferredLocalMATLABRoot, c.preferredLocalMATLABRoot).
