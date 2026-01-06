@@ -39,10 +39,12 @@ import (
 	checkmatlabcodesinglesessiontool "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/checkmatlabcode"
 	detectmatlabtoolboxessinglesessiontool "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/detectmatlabtoolboxes"
 	evalmatlabcodesinglesessiontool "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/evalmatlabcode"
+	queryvmcblockhelpsinglesessiontool "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/queryvmcblockhelp"
 	runmatlabfilesinglesessiontool "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/runmatlabfile"
 	runmatlabtestfilesinglesessiontool "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/runmatlabtestfile"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/baseresource"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/codingguidelines"
+	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/vmcblockhelp"
 	watchdogclient "github.com/matlab/matlab-mcp-core-server/internal/adaptors/watchdog"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/watchdog/process"
 	"github.com/matlab/matlab-mcp-core-server/internal/entities"
@@ -53,6 +55,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/detectmatlabtoolboxes"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/evalmatlabcode"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/listavailablematlabs"
+	"github.com/matlab/matlab-mcp-core-server/internal/usecases/queryvmcblockhelp"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/runmatlabfile"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/runmatlabtestfile"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/startmatlabsession"
@@ -178,9 +181,13 @@ func initializeOrchestrator() (*orchestrator.Orchestrator, error) {
 		runmatlabtestfilesinglesessiontool.New,
 		wire.Bind(new(runmatlabtestfilesinglesessiontool.Usecase), new(*runmatlabtestfile.Usecase)),
 
+		queryvmcblockhelpsinglesessiontool.New,
+		wire.Bind(new(queryvmcblockhelpsinglesessiontool.Usecase), new(*queryvmcblockhelp.Usecase)),
+
 		// Resources
 		wire.Bind(new(baseresource.LoggerFactory), new(*logger.Factory)),
 		codingguidelines.New,
+		vmcblockhelp.New,
 
 		// Use Cases
 		listavailablematlabs.New,
@@ -195,6 +202,7 @@ func initializeOrchestrator() (*orchestrator.Orchestrator, error) {
 		wire.Bind(new(runmatlabfile.PathValidator), new(*pathvalidator.PathValidator)),
 		runmatlabtestfile.New,
 		wire.Bind(new(runmatlabtestfile.PathValidator), new(*pathvalidator.PathValidator)),
+		queryvmcblockhelp.New,
 
 		// Use Cases Utilities
 		pathvalidator.New,

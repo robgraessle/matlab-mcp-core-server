@@ -108,6 +108,7 @@ fix-lint:
 
 CODING_GUIDELINES_URL := https://raw.githubusercontent.com/matlab/rules/main/matlab-coding-standards.md
 CODING_GUIDELINES_PATH := $(CURDIR)/internal/adaptors/mcp/resources/codingguidelines/codingguidelines.md
+VMC_HELP_PATH := $(CURDIR)/internal/adaptors/mcp/resources/vmcblockhelp/vmchelp
 
 update-coding-guidelines:
 ifeq ($(OS),Windows_NT)
@@ -116,9 +117,28 @@ else
 	curl -sSL "$(CODING_GUIDELINES_URL)" -o "$(CODING_GUIDELINES_PATH)"
 endif
 
+update-vmc-help:
+ifeq ($(OS),Windows_NT)
+	@echo "Cloning VMC_Help repository..."
+	if (Test-Path "$(VMC_HELP_PATH)") { Remove-Item -Recurse -Force "$(VMC_HELP_PATH)" }
+	git clone --depth 1 https://github.com/Xilinx/VMC_Help.git "$(VMC_HELP_PATH)"
+	Remove-Item -Recurse -Force "$(VMC_HELP_PATH)/.git"
+	@echo "Removing non-markdown files..."
+	Get-ChildItem -Path "$(VMC_HELP_PATH)" -Recurse -File | Where-Object { $$_.Extension -ne '.md' } | Remove-Item -Force
+	Get-ChildItem -Path "$(VMC_HELP_PATH)" -Recurse -Directory | Where-Object { (Get-ChildItem $$_.FullName -Recurse -File -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0 } | Remove-Item -Recurse -Force
+else
+	@echo "Cloning VMC_Help repository..."
+	rm -rf "$(VMC_HELP_PATH)"
+	git clone --depth 1 https://github.com/Xilinx/VMC_Help.git "$(VMC_HELP_PATH)"
+	rm -rf "$(VMC_HELP_PATH)/.git"
+	@echo "Removing non-markdown files..."
+	find "$(VMC_HELP_PATH)" -type f ! -name "*.md" -delete
+	find "$(VMC_HELP_PATH)" -type d -empty -delete
+endif
+
 # Building
 
-build: build-for-windows build-for-glnxa64 build-for-maci64 build-for-maca64
+build: update-vmc-help build-for-windows build-for-glnxa64 build-for-maci64 build-for-maca64
 
 build-for-windows:
 ifeq ($(OS),Windows_NT)

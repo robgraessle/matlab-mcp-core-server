@@ -5,6 +5,7 @@ package configurator
 import (
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/codingguidelines"
+	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/vmcblockhelp"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools"
 	evalmatlabcodemultisession "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/multisession/evalmatlabcode"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/multisession/listavailablematlabs"
@@ -13,6 +14,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/checkmatlabcode"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/detectmatlabtoolboxes"
 	evalmatlabcodesinglesession "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/evalmatlabcode"
+	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/queryvmcblockhelp"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/runmatlabfile"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/runmatlabtestfile"
 )
@@ -36,9 +38,11 @@ type Configurator struct {
 	detectMATLABToolboxesInGlobalMATLABSessionTool tools.Tool
 	runMATLABFileInGlobalMATLABSessionTool         tools.Tool
 	runMATLABTestFileInGlobalMATLABSessionTool     tools.Tool
+	queryVMCBlockHelpTool                          tools.Tool
 
 	// Resources
 	codingGuidelinesResource resources.Resource
+	vmcBlockHelpResource     resources.Resource
 }
 
 func New(
@@ -54,8 +58,10 @@ func New(
 	detectMATLABToolboxesInGlobalMATLABSessionTool *detectmatlabtoolboxes.Tool,
 	runMATLABFileInGlobalMATLABSessionTool *runmatlabfile.Tool,
 	runMATLABTestFileInGlobalMATLABSessionTool *runmatlabtestfile.Tool,
+	queryVMCBlockHelpTool *queryvmcblockhelp.Tool,
 
 	codingGuidelinesResource *codingguidelines.Resource,
+	vmcBlockHelpResource *vmcblockhelp.Resource,
 ) *Configurator {
 	return &Configurator{
 		config: config,
@@ -70,8 +76,10 @@ func New(
 		detectMATLABToolboxesInGlobalMATLABSessionTool: detectMATLABToolboxesInGlobalMATLABSessionTool,
 		runMATLABFileInGlobalMATLABSessionTool:         runMATLABFileInGlobalMATLABSessionTool,
 		runMATLABTestFileInGlobalMATLABSessionTool:     runMATLABTestFileInGlobalMATLABSessionTool,
+		queryVMCBlockHelpTool:                          queryVMCBlockHelpTool,
 
 		codingGuidelinesResource: codingGuidelinesResource,
+		vmcBlockHelpResource:     vmcBlockHelpResource,
 	}
 }
 
@@ -85,6 +93,7 @@ func (c *Configurator) GetToolsToAdd() []tools.Tool {
 			c.detectMATLABToolboxesInGlobalMATLABSessionTool,
 			c.runMATLABFileInGlobalMATLABSessionTool,
 			c.runMATLABTestFileInGlobalMATLABSessionTool,
+			c.queryVMCBlockHelpTool,
 		}
 	}
 
@@ -99,5 +108,6 @@ func (c *Configurator) GetToolsToAdd() []tools.Tool {
 func (c *Configurator) GetResourcesToAdd() []resources.Resource {
 	return []resources.Resource{
 		c.codingGuidelinesResource,
+		c.vmcBlockHelpResource,
 	}
 }

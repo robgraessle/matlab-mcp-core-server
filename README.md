@@ -30,12 +30,18 @@ To build the Vitis Model Composer MCP Core Server from source code on Linux:
    ```
    This installs required tools: wire (dependency injection), mockery (mock generation), gotestsum (test runner), and golangci-lint (linter).
 
-3. **Build the server**
+3. **Download Vitis Model Composer help documentation**
+   ```sh
+   make update-vmc-help
+   ```
+   This downloads the VMC block help documentation from the [VMC_Help GitHub repository](https://github.com/Xilinx/VMC_Help) and prepares it for embedding in the server binary.
+
+4. **Build the server**
    ```sh
    make build-for-glnxa64
    ```
 
-4. **Make the binary executable**
+5. **Make the binary executable**
    ```sh
    chmod +x .bin/glnxa64/matlab-mcp-core-server
    ```
@@ -114,13 +120,26 @@ Customize the behavior of the server by providing arguments in the `args` array 
    - Inputs:
      - `script_path` (string): Absolute path to the MATLAB test script file. Must be a valid `.m` file containing MATLAB unit tests, within an allowed directory. Example: `C:\Users\username\tests\testMyFunction.m` or `/home/user/matlab/tests/test_analysis.m`.
 
+6. `query_vmc_block_help`
+   - Search and retrieve help documentation for specific Vitis Model Composer blocks. Returns detailed documentation including parameters, description, and usage examples for the requested block. This tool searches through all available block documentation and returns the best match.
+   - Inputs:
+     - `block_name` (string): The name of the Vitis Model Composer block to query. Can be a partial name (e.g., 'Abs', 'FFT', 'FIR'). The search is case-insensitive and will find the best match.
+   - Example usage: "Query help for the HLS Abs block" or "What are the parameters for the FFT block?"
+
 ## Resources
-The MCP server provides a [Resource (MCP)](https://modelcontextprotocol.io/specification/2025-03-26/server/resources) to help your AI application write MATLAB code. To see instructions for using this resource, refer to the documentation of your AI application that explains how to use resources. 
+The MCP server provides [Resources (MCP)](https://modelcontextprotocol.io/specification/2025-03-26/server/resources) to help your AI application write better code and understand Vitis Model Composer blocks. To see instructions for using these resources, refer to the documentation of your AI application that explains how to use resources. 
+
 1. `matlab_coding_guidelines`
    - Provides comprehensive MATLAB coding standards for improving code readability, maintainability, and collaboration. The guidelines encompass naming conventions, formatting, commenting, performance optimization, and error handling.
    - URI: `guidelines://coding`
    - MIME Type: `text/markdown`
    - Source: [MATLAB Coding Standards (GitHub)](https://github.com/matlab/rules/blob/main/matlab-coding-standards.md)
+
+2. `vmcblockhelp`
+   - Provides comprehensive help documentation for Vitis Model Composer blocks from the VMC_Help GitHub repository. Includes block descriptions, parameters, usage examples, and best practices.
+   - URI: `vmc-help://blocks`
+   - MIME Type: `text/markdown`
+   - Source: [VMC_Help (GitHub)](https://github.com/Xilinx/VMC_Help)
 
 # 
 When using the Vitis Model Composer MCP Core Server, you should thoroughly review and validate all tool calls before you run them. Always keep a human in the loop for important actions and only proceed once you are confident the call will do exactly what you expect. For more information, see [User Interaction Model (MCP)](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#user-interaction-model) and [Security Considerations (MCP)](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#security-considerations).

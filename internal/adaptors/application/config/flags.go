@@ -4,6 +4,7 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/application/inputs/flags"
 	"github.com/matlab/matlab-mcp-core-server/internal/entities"
@@ -64,10 +65,13 @@ func setupFlags(flagSet *pflag.FlagSet) error {
 }
 
 func createConfigWithFlagValues(osLayer OSLayer, flagSet *pflag.FlagSet, args []string) (*Config, error) {
+	slog.Debug("Parsing command line flags...", "args", args)
 	err := flagSet.Parse(args)
 	if err != nil {
+		slog.Error("Failed to parse command line flags", "error", err)
 		return nil, err
 	}
+	slog.Debug("Command line flags parsed successfully")
 
 	versionMode, err := flagSet.GetBool(flags.VersionMode)
 	if err != nil {

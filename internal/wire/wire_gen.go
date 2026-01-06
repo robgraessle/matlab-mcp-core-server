@@ -31,6 +31,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/matlabmanager/matlabsessionclient"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/matlabmanager/matlabsessionstore"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/codingguidelines"
+	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/vmcblockhelp"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/server"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/server/configurator"
 	evalmatlabcode2 "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/multisession/evalmatlabcode"
@@ -40,6 +41,7 @@ import (
 	checkmatlabcode2 "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/checkmatlabcode"
 	detectmatlabtoolboxes2 "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/detectmatlabtoolboxes"
 	evalmatlabcode3 "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/evalmatlabcode"
+	queryvmcblockhelp2 "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/queryvmcblockhelp"
 	runmatlabfile2 "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/runmatlabfile"
 	runmatlabtestfile2 "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/singlesession/runmatlabtestfile"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/watchdog"
@@ -52,6 +54,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/detectmatlabtoolboxes"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/evalmatlabcode"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/listavailablematlabs"
+	"github.com/matlab/matlab-mcp-core-server/internal/usecases/queryvmcblockhelp"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/runmatlabfile"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/runmatlabtestfile"
 	"github.com/matlab/matlab-mcp-core-server/internal/usecases/startmatlabsession"
@@ -139,11 +142,17 @@ func initializeOrchestrator() (*orchestrator.Orchestrator, error) {
 	runmatlabfileTool := runmatlabfile2.New(loggerFactory, runmatlabfileUsecase, globalMATLAB)
 	runmatlabtestfileUsecase := runmatlabtestfile.New(pathValidator)
 	runmatlabtestfileTool := runmatlabtestfile2.New(loggerFactory, runmatlabtestfileUsecase, globalMATLAB)
+	queryvmcblockhelpUsecase := queryvmcblockhelp.New()
+	queryvmcblockhelpTool := queryvmcblockhelp2.New(loggerFactory, queryvmcblockhelpUsecase)
 	resource, err := codingguidelines.New(loggerFactory)
 	if err != nil {
 		return nil, err
 	}
-	configuratorConfigurator := configurator.New(configConfig, tool, startmatlabsessionTool, stopmatlabsessionTool, evalmatlabcodeTool, tool2, checkmatlabcodeTool, detectmatlabtoolboxesTool, runmatlabfileTool, runmatlabtestfileTool, resource)
+	vmcblockhelpResource, err := vmcblockhelp.New(loggerFactory)
+	if err != nil {
+		return nil, err
+	}
+	configuratorConfigurator := configurator.New(configConfig, tool, startmatlabsessionTool, stopmatlabsessionTool, evalmatlabcodeTool, tool2, checkmatlabcodeTool, detectmatlabtoolboxesTool, runmatlabfileTool, runmatlabtestfileTool, queryvmcblockhelpTool, resource, vmcblockhelpResource)
 	serverServer, err := server.New(mcpServer, loggerFactory, lifecycleSignaler, configuratorConfigurator)
 	if err != nil {
 		return nil, err

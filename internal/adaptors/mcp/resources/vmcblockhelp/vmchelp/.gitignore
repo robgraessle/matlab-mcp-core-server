@@ -1,0 +1,5 @@
+# Ignore all downloaded files from VMC_Help repository
+*
+
+# But keep this .gitignore file
+!.gitignore
