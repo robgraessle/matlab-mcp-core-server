@@ -128,6 +128,7 @@ When using the Vitis Model Composer MCP Core Server, you should thoroughly revie
 ---
 
 Copyright 2026 Advanced Micro Devices, Inc.
-based on [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server): Copyright 2025 The MathWorks, Inc.]
+
+Based on [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server): Copyright 2025 The MathWorks, Inc.
 
 ----
