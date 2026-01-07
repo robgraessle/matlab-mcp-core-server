@@ -1,18 +1,35 @@
-This server provides tools to inspect, analyze, run, and test MATLAB code using a locally installed MATLAB instance. The MATLAB desktop is visible to the user. Graphical output appears within the MATLAB UI.
+This server inspects, analyzes, runs, and tests MATLAB code and Vitis Model Composer models using a local MATLAB instance. User sees MATLAB desktop and graphical output.
 
 Available tools:
-
-- List installed MATLAB toolboxes and versions.
-- Statically analyze a MATLAB .m script.
-- Execute inline MATLAB commands.
-- Execute a MATLAB .m script file.
-- Run a MATLAB test script.
+- List MATLAB toolboxes and versions
+- Statically analyze MATLAB .m scripts
+- Execute inline MATLAB commands
+- Execute MATLAB .m script files
+- Run MATLAB test scripts
+- Query VMC block help by block name
 
 Available resources:
+- guidelines://coding - MATLAB coding standards (naming, formatting, commenting, performance, error handling)
+- vmc-help://blocks - 260+ VMC blocks (AIE/HDL/HLS) with parameters, usage, and Simulink library locations (aieBasic, hdlDSPIP, hlsMath, etc.)
+- vmc-hub://api-examples - Complete vmchub_get_param/vmchub_set_param reference with all 38 parameters and data type handling
 
-- guidelines://coding. Provides comprehensive MATLAB coding standards for improving code readability, maintainability, and collaboration. The guidelines encompass naming conventions, formatting, commenting, performance optimization, and error handling.
+VMC Hub Block Requirements:
+Every Vitis Model Composer model must have a VMC Hub block at the top level.
+VMC Hub blocks require specialized APIs (NOT standard get_param/set_param):
+- Read: vmchub_get_param(hubBlock, subsystem, parameterName)
+- Write: vmchub_set_param(hubBlock, subsystem, parameterName, value)
+- Find Hub: hubBlk = xmcFindHubBlock(modelName)
+- Subsystem path: [modelName, '/SubsystemName']
+- Handle numeric (0/1) vs string parameters correctly
+- See vmc-hub://api-examples for working examples
 
-Best practices and safety:
+Block Selection Heuristics (when domain unspecified):
+1. Recent context: Prefer/avoid domains based on user's recent adds/removes/modifications
+2. Subsystem analysis: Prefer domain matching majority of existing blocks (HDL/HLS/AIE)
+3. Ask if ambiguous or conflicting
 
-- Always inspect tool outputs and catch errors. If execution fails, ask the user for clarification.
-- Do not run untrusted code that could alter the file system or environment settings, without explicit consent from the user.
+Best practices:
+- Inspect tool outputs; ask user if execution fails
+- Don't run untrusted code without user consent
+- Check vmc-hub://api-examples before using Hub block parameters
+- Use query_vmc_block_help for VMC block details and library locations
