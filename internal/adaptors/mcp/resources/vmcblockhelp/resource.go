@@ -5,6 +5,7 @@ package vmcblockhelp
 import (
 	"context"
 	"embed"
+	"encoding/csv"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -16,6 +17,33 @@ import (
 
 //go:embed vmchelp
 var vmcHelpFiles embed.FS
+
+//go:embed vmc_blocks_library_mapping.csv
+var libraryMappingCSV string
+
+// blockLibraryMap maps block names to their Simulink library locations
+var blockLibraryMap map[string]string
+
+func init() {
+	// Parse the CSV on initialization
+	blockLibraryMap = make(map[string]string)
+	
+	reader := csv.NewReader(strings.NewReader(libraryMappingCSV))
+	records, err := reader.ReadAll()
+	if err != nil {
+		// If parsing fails, continue with empty map
+		return
+	}
+	
+	// Skip header row
+	for i := 1; i < len(records); i++ {
+		if len(records[i]) >= 2 {
+			blockName := strings.TrimSpace(records[i][0])
+			library := strings.TrimSpace(records[i][1])
+			blockLibraryMap[blockName] = library
+		}
+	}
+}
 
 type Resource struct {
 	*baseresource.Resource
@@ -140,7 +168,16 @@ func Handler() baseresource.ResourceHandler {
 					combinedContent.WriteString(f.name)
 					combinedContent.WriteString("](#")
 					combinedContent.WriteString(strings.ToLower(strings.ReplaceAll(f.name, " ", "-")))
-					combinedContent.WriteString(")\n")
+					combinedContent.WriteString(")")
+					
+					// Add library information if available
+					if library, ok := blockLibraryMap[f.name]; ok {
+						combinedContent.WriteString(" - **Library:** `")
+						combinedContent.WriteString(library)
+						combinedContent.WriteString("`")
+					}
+					
+					combinedContent.WriteString("\n")
 				}
 				combinedContent.WriteString("\n")
 			}
@@ -173,6 +210,14 @@ func Handler() baseresource.ResourceHandler {
 				combinedContent.WriteString("**Category:** ")
 				combinedContent.WriteString(cat)
 				combinedContent.WriteString("  \n")
+				
+				// Add library information if available
+				if library, ok := blockLibraryMap[f.name]; ok {
+					combinedContent.WriteString("**Simulink Library:** `")
+					combinedContent.WriteString(library)
+					combinedContent.WriteString("`  \n")
+				}
+				
 				combinedContent.WriteString("**Source File:** `")
 				combinedContent.WriteString(f.path)
 				combinedContent.WriteString("`\n\n")
@@ -288,6 +333,14 @@ func SearchBlock(searchTerm string) (string, error) {
 	doc.WriteString("**Category:** ")
 	doc.WriteString(selected.category)
 	doc.WriteString("  \n")
+	
+	// Add library information if available
+	if library, ok := blockLibraryMap[selected.title]; ok {
+		doc.WriteString("**Simulink Library:** `")
+		doc.WriteString(library)
+		doc.WriteString("`  \n")
+	}
+	
 	doc.WriteString("**Source File:** `")
 	doc.WriteString(selected.path)
 	doc.WriteString("`\n\n")

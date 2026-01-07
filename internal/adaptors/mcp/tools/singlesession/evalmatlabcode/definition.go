@@ -5,7 +5,7 @@ package evalmatlabcode
 const (
 	name        = "evaluate_matlab_code"
 	title       = "Evaluate MATLAB Code"
-	description = "Evaluate arbitrary MATLAB code (`code`) within a specified project directory (`project_path`) context in an existing MATLAB session. Returns the command window output from code execution."
+	description = "Evaluate arbitrary MATLAB code (`code`) within a specified project directory (`project_path`) context in an existing MATLAB session. Returns the command window output from code execution. Note: The Vitis Model Composer Hub block requires specialized APIs instead of standard get_param/set_param. Check available resources before using standard MATLAB functions on the Vitis Model Composer Hub block."
 )
 
 type Args struct {

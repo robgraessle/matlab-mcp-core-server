@@ -1,0 +1,269 @@
+UniqueBlockID,SimulinkLibrary
+AIE to HDL,aieUtilities
+AIE to HLS,aieUtilities
+Algebraic Loop Breaker,aieUtilities
+Convert From Bfloat16,aieUtilities
+Convert To Bfloat16,aieUtilities
+From AXI-S,aieUtilities
+HDL to AIE,aieUtilities
+HLS to AIE,aieUtilities
+RTP Source,aieUtilities
+To AXI-S,aieUtilities
+To Fixed Size,aieUtilities
+To Variable Size,aieUtilities
+Variable Size Signal to Workspace,aieUtilities
+Appache2.0,vmcUtilities
+DocBlock,vmcUtilities
+Vitis Model Composer Hub,vmcUtilities
+AIE Class Kernel,aieBasic
+AIE Graph,aieBasic
+AIE Kernel,aieBasic
+AIE Signal Spec,aieBasic
+FIFO (AIE),aieBasic
+PLIO,aieBasic
+Shared Buffer,aieBasic
+Bitonic Sort,aieDSP
+Convolution,aieDSP
+Correlation,aieDSP
+Cumulative Sum (AIE),aieDSP
+DDS,aieDSP
+DDS LUT,aieDSP
+DDS LUT Stream,aieDSP
+DDS Stream,aieDSP
+DFT,aieDSP
+DFT Stream,aieDSP
+FFT (AIE),aieDSP
+FFT Dynamic Point,aieDSP
+FFT Dynamic Point Stream,aieDSP
+FFT Stream,aieDSP
+FIR Asymmetric,aieDSP
+FIR Asymmetric Decimation,aieDSP
+FIR Asymmetric Decimation Stream,aieDSP
+FIR Asymmetric Stream,aieDSP
+FIR Halfband Decimator,aieDSP
+FIR Halfband Decimator Stream,aieDSP
+FIR Halfband Interpolator,aieDSP
+FIR Halfband Interpolator Stream,aieDSP
+FIR Interpolation,aieDSP
+FIR Interpolation Stream,aieDSP
+FIR Resampler Filter,aieDSP
+FIR Resampler Filter Stream,aieDSP
+FIR Symmetric,aieDSP
+FIR Symmetric Decimation,aieDSP
+FIR Symmetric Decimation Stream,aieDSP
+FIR Symmetric Stream,aieDSP
+FIR TDM,aieDSP
+FIR TDM Stream,aieDSP
+Function Approximation,aieDSP
+IDFT,aieDSP
+IDFT Stream,aieDSP
+IFFT,aieDSP
+IFFT Stream,aieDSP
+Mixed-Radix FFT,aieDSP
+Mixed-Radix FFT Stream,aieDSP
+Mixed-Radix IFFT,aieDSP
+Mixed-Radix IFFT Stream,aieDSP
+Mixer,aieDSP
+Mixer LUT,aieDSP
+Mixer LUT Stream,aieDSP
+Mixer Stream,aieDSP
+Vectorized Sample Delay,aieDSP
+Vectorized Sample Delay Stream,aieDSP
+Window Function,aieDSP
+Window Function Stream,aieDSP
+AXI FIFO,hdlBasic
+Absolute,hdlBasic
+Accumulator,hdlBasic
+AddSub,hdlBasic
+Addressable Shift Register,hdlBasic
+Assert,hdlBasic
+BitBasher,hdlBasic
+Black Box,hdlBasic
+CMult,hdlBasic
+Concat,hdlBasic
+Constant (HDL),hdlBasic
+Convert,hdlBasic
+Counter,hdlBasic
+DSP48E,hdlBasic
+DSP48E1,hdlBasic
+DSP48E2,hdlBasic
+DSP58,hdlBasic
+DSPCPLX,hdlBasic
+DSPFP32,hdlBasic
+Delay (HDL),hdlBasic
+Depuncture,hdlBasic
+Digital FIR Filter,hdlBasic
+Divide (HDL),hdlBasic
+Down Sample,hdlBasic
+Dual Port RAM,hdlBasic
+Exponential,hdlBasic
+Expression,hdlBasic
+FFT (HDL),hdlBasic
+FIFO (HDL),hdlBasic
+Gateway In,hdlBasic
+Gateway Out,hdlBasic
+Inverse FFT,hdlBasic
+Inverter,hdlBasic
+LFSR,hdlBasic
+Logical,hdlBasic
+MCode,hdlBasic
+Mult,hdlBasic
+MultAdd,hdlBasic
+Mux (HDL),hdlBasic
+Natural Logarithm,hdlBasic
+Negate (HDL),hdlBasic
+Opmode,hdlBasic
+Parallel to Serial,hdlBasic
+Product (HDL),hdlBasic
+Puncture,hdlBasic
+ROM,hdlBasic
+Reciprocal (HDL),hdlBasic
+Reciprocal SquareRoot,hdlBasic
+Register,hdlBasic
+Reinterpret (HDL),hdlBasic
+Relational,hdlBasic
+Requantize,hdlBasic
+Reset Generator,hdlBasic
+Sample Time,hdlBasic
+Scale,hdlBasic
+Serial to Parallel,hdlBasic
+Shift,hdlBasic
+Simple Dual Port RAM,hdlBasic
+Sine Wave,hdlBasic
+Single Port RAM,hdlBasic
+Slice,hdlBasic
+SquareRoot,hdlBasic
+Threshold,hdlBasic
+Time Division Demultiplexer,hdlBasic
+Time Division Multiplexer,hdlBasic
+Up Sample,hdlBasic
+Vitis HLS,hdlBasic
+CIC Compiler 4.0,hdlDSPIP
+CORDIC 6.0,hdlDSPIP
+Complex Multiplier 6.0,hdlDSPIP
+Convolution Encoder 9.0,hdlDSPIP
+DDS Compiler 6.0,hdlDSPIP
+DSP Macro 1.0,hdlDSPIP
+Divider Generator 5.1,hdlDSPIP
+FIR Compiler 7.2,hdlDSPIP
+Fast Fourier Transform 9.1,hdlDSPIP
+De-interleaver 8.0,hdlDSPIP
+Reed-Solomon Decoder 9.0,hdlDSPIP
+Reed-Solomon Encoder 9.0,hdlDSPIP
+Versal LDPC Decoder,hdlDSPIP
+Versal RF Channelizer,hdlDSPIP
+Versal RF FFT,hdlDSPIP
+Viterbi Decoder 9.1,hdlDSPIP
+Scalar2Vector,hdlSSR
+Vector AddSub Fabric,hdlSSR
+Vector Assert,hdlSSR
+Vector Complex Mult,hdlSSR
+Vector Concat,hdlSSR
+Vector Constant,hdlSSR
+Vector Convert,hdlSSR
+Vector DDFS,hdlSSR
+Vector Delay,hdlSSR
+Vector Delay delta,hdlSSR
+Vector Down Sample,hdlSSR
+Vector FFT,hdlSSR
+Vector FFT Float,hdlSSR
+Vector FIR,hdlSSR
+Vector IFFT,hdlSSR
+Vector IFFT Float,hdlSSR
+Vector Logical,hdlSSR
+Vector Mux,hdlSSR
+Vector Real Gateway In,hdlSSR
+Vector Real Gateway Out,hdlSSR
+Vector Real Mult,hdlSSR
+Vector Register,hdlSSR
+Vector Reinterpret,hdlSSR
+Vector Relational,hdlSSR
+Vector Slice,hdlSSR
+Vector Up Sample,hdlSSR
+Vector2Scalar,hdlSSR
+vector Absolute,hdlSSR
+Clock Enable Probe,hdlUtilities
+Clock Probe,hdlUtilities
+Copyright,hdlUtilities
+FDATool,hdlUtilities
+Gateway In AXIS,hdlUtilities
+Gateway Out AXIS,hdlUtilities
+Indeterminate Probe,hdlUtilities
+Questa,hdlUtilities
+Toolbar,hdlUtilities
+Bit Concat,hlsBasic
+Bit Slice,hlsBasic
+Bitwise AND,hlsBasic
+Bitwise NOT,hlsBasic
+Bitwise OR,hlsBasic
+Bitwise XOR,hlsBasic
+Complex to Real-Imag,hlsBasic
+Conditional,hlsBasic
+Conjugate,hlsBasic
+Constant (HLS),hlsBasic
+Cumulative Sum (HLS),hlsBasic
+Data Type Conversion,hlsBasic
+Delay (HLS),hlsBasic
+Demux,hlsBasic
+Divide (HLS),hlsBasic
+Equals,hlsBasic
+Gain,hlsBasic
+Greater,hlsBasic
+Greater Equals,hlsBasic
+HLS Kernel,hlsBasic
+Hermitian,hlsBasic
+Import Function,hlsBasic
+Lesser,hlsBasic
+Lesser Equals,hlsBasic
+Logical AND,hlsBasic
+Logical NOT,hlsBasic
+Logical OR,hlsBasic
+Lookup Table,hlsBasic
+Matrix Multiply,hlsBasic
+Max,hlsBasic
+Min,hlsBasic
+Modulus,hlsBasic
+Mux (HLS),hlsBasic
+Negate (HLS),hlsBasic
+Not Equals,hlsBasic
+Product (HLS),hlsBasic
+Product of Elements,hlsBasic
+Real-Imag to Complex,hlsBasic
+Reduction AND,hlsBasic
+Reduction OR,hlsBasic
+Reduction XOR,hlsBasic
+Reinterpret (HLS),hlsBasic
+Remainder,hlsBasic
+Reshape Row-Major,hlsBasic
+Shift Left,hlsBasic
+Shift Right,hlsBasic
+Submatrix,hlsBasic
+Subtract,hlsBasic
+Sum,hlsBasic
+Sum of Elements,hlsBasic
+Transpose,hlsBasic
+Unit Delay,hlsBasic
+Window Processing,hlsBasic
+Window Processing Kernel,hlsBasic
+Window Processing Master,hlsBasic
+Window Processing Slave,hlsBasic
+Abs,hlsMath
+Complex to Polar,hlsMath
+Cosine,hlsMath
+Exp,hlsMath
+Log,hlsMath
+Log10,hlsMath
+Polar to Complex,hlsMath
+Pow,hlsMath
+QR Inverse,hlsMath
+Reciprocal (HLS),hlsMath
+Reciprocal Sqrt,hlsMath
+Signum,hlsMath
+Sine,hlsMath
+Sqrt,hlsMath
+Tangent,hlsMath
+atan,hlsMath
+atan2,hlsMath
+cosh,hlsMath
+sinh,hlsMath
+Interface Spec,hlsUtilities

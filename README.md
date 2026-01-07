@@ -136,10 +136,17 @@ The MCP server provides [Resources (MCP)](https://modelcontextprotocol.io/specif
    - Source: [MATLAB Coding Standards (GitHub)](https://github.com/matlab/rules/blob/main/matlab-coding-standards.md)
 
 2. `vmcblockhelp`
-   - Provides comprehensive help documentation for Vitis Model Composer blocks from the VMC_Help GitHub repository. Includes block descriptions, parameters, usage examples, and best practices.
+   - Provides comprehensive help documentation for Vitis Model Composer blocks from the VMC_Help GitHub repository. Includes block descriptions, parameters, usage examples, and best practices. Each block entry includes its Simulink library location for easy identification.
    - URI: `vmc-help://blocks`
    - MIME Type: `text/markdown`
    - Source: [VMC_Help (GitHub)](https://github.com/Xilinx/VMC_Help)
+   - Additional Information: Simulink library mappings for all blocks (e.g., `aieBasic`, `hdlDSPIP`, `hlsMath`)
+
+3. `vmchubapi`
+   - Provides reference examples and documentation for using `vmchub_get_param` and `vmchub_set_param` functions to programmatically access and modify Vitis Model Composer Hub block parameters. Includes complete working examples, parameter listings, and best practices.
+   - URI: `vmc-hub://api-examples`
+   - MIME Type: `text/markdown`
+   - Use this resource when: Modifying Hub block parameters, configuring hardware settings, setting up code generation options, or working with IP packaging parameters.
 
 # 
 When using the Vitis Model Composer MCP Core Server, you should thoroughly review and validate all tool calls before you run them. Always keep a human in the loop for important actions and only proceed once you are confident the call will do exactly what you expect. For more information, see [User Interaction Model (MCP)](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#user-interaction-model) and [Security Considerations (MCP)](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#security-considerations).

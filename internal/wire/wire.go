@@ -45,6 +45,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/baseresource"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/codingguidelines"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/vmcblockhelp"
+	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/vmchubapi"
 	watchdogclient "github.com/matlab/matlab-mcp-core-server/internal/adaptors/watchdog"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/watchdog/process"
 	"github.com/matlab/matlab-mcp-core-server/internal/entities"
@@ -188,6 +189,7 @@ func initializeOrchestrator() (*orchestrator.Orchestrator, error) {
 		wire.Bind(new(baseresource.LoggerFactory), new(*logger.Factory)),
 		codingguidelines.New,
 		vmcblockhelp.New,
+		vmchubapi.New,
 
 		// Use Cases
 		listavailablematlabs.New,

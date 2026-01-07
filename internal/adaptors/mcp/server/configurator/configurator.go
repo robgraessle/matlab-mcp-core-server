@@ -6,6 +6,7 @@ import (
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/codingguidelines"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/vmcblockhelp"
+	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/vmchubapi"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools"
 	evalmatlabcodemultisession "github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/multisession/evalmatlabcode"
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/tools/multisession/listavailablematlabs"
@@ -43,6 +44,7 @@ type Configurator struct {
 	// Resources
 	codingGuidelinesResource resources.Resource
 	vmcBlockHelpResource     resources.Resource
+	vmcHubAPIResource        resources.Resource
 }
 
 func New(
@@ -62,6 +64,7 @@ func New(
 
 	codingGuidelinesResource *codingguidelines.Resource,
 	vmcBlockHelpResource *vmcblockhelp.Resource,
+	vmcHubAPIResource *vmchubapi.Resource,
 ) *Configurator {
 	return &Configurator{
 		config: config,
@@ -80,6 +83,7 @@ func New(
 
 		codingGuidelinesResource: codingGuidelinesResource,
 		vmcBlockHelpResource:     vmcBlockHelpResource,
+		vmcHubAPIResource:        vmcHubAPIResource,
 	}
 }
 
@@ -109,5 +113,6 @@ func (c *Configurator) GetResourcesToAdd() []resources.Resource {
 	return []resources.Resource{
 		c.codingGuidelinesResource,
 		c.vmcBlockHelpResource,
+		c.vmcHubAPIResource,
 	}
 }
