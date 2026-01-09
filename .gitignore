@@ -3,3 +3,4 @@
 /vendor
 /.env
 AGENTS.md
+internal/adaptors/mcp/resources/vmcblockhelp/vmchelp/**/*.md
