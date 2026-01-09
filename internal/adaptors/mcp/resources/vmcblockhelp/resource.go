@@ -5,10 +5,10 @@ package vmcblockhelp
 import (
 	"context"
 	"embed"
-	"encoding/csv"
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/matlab/matlab-mcp-core-server/internal/adaptors/mcp/resources/baseresource"
@@ -18,31 +18,24 @@ import (
 //go:embed vmchelp
 var vmcHelpFiles embed.FS
 
-//go:embed vmc_blocks_library_mapping.csv
-var libraryMappingCSV string
+// libraryMetadataRegex matches HTML comments like: <!-- Library: libraryName -->
+var libraryMetadataRegex = regexp.MustCompile(`^<!--\s*Library:\s*(\S+)\s*-->`)
 
-// blockLibraryMap maps block names to their Simulink library locations
-var blockLibraryMap map[string]string
-
-func init() {
-	// Parse the CSV on initialization
-	blockLibraryMap = make(map[string]string)
-	
-	reader := csv.NewReader(strings.NewReader(libraryMappingCSV))
-	records, err := reader.ReadAll()
-	if err != nil {
-		// If parsing fails, continue with empty map
-		return
+// extractLibraryFromContent extracts the library name from HTML comment metadata
+// in the first line of the markdown content
+func extractLibraryFromContent(content string) string {
+	lines := strings.Split(content, "\n")
+	if len(lines) == 0 {
+		return ""
 	}
 	
-	// Skip header row
-	for i := 1; i < len(records); i++ {
-		if len(records[i]) >= 2 {
-			blockName := strings.TrimSpace(records[i][0])
-			library := strings.TrimSpace(records[i][1])
-			blockLibraryMap[blockName] = library
-		}
+	firstLine := strings.TrimSpace(lines[0])
+	matches := libraryMetadataRegex.FindStringSubmatch(firstLine)
+	if len(matches) >= 2 {
+		return matches[1]
 	}
+	
+	return ""
 }
 
 type Resource struct {
@@ -78,6 +71,7 @@ func Handler() baseresource.ResourceHandler {
 			path     string
 			category string
 			name     string
+			library  string
 			content  []byte
 		}
 		var files []fileInfo
@@ -99,15 +93,19 @@ func Handler() baseresource.ResourceHandler {
 				return nil // Continue processing other files
 			}
 
-			// Extract title from first line
-			title := strings.TrimSuffix(filepath.Base(path), ".md")
 			contentStr := string(content)
+			
+			// Extract library metadata from first line
+			library := extractLibraryFromContent(contentStr)
+
+			// Extract title from first heading (skip metadata line if present)
+			title := strings.TrimSuffix(filepath.Base(path), ".md")
 			lines := strings.Split(contentStr, "\n")
-			if len(lines) > 0 {
-				firstLine := strings.TrimSpace(lines[0])
-				// Remove leading # symbols
-				if strings.HasPrefix(firstLine, "#") {
-					title = strings.TrimSpace(strings.TrimLeft(firstLine, "#"))
+			for _, line := range lines {
+				trimmed := strings.TrimSpace(line)
+				if strings.HasPrefix(trimmed, "#") {
+					title = strings.TrimSpace(strings.TrimLeft(trimmed, "#"))
+					break
 				}
 			}
 
@@ -125,6 +123,7 @@ func Handler() baseresource.ResourceHandler {
 				path:     path,
 				category: category,
 				name:     title,
+				library:  library,
 				content:  content,
 			})
 
@@ -171,9 +170,9 @@ func Handler() baseresource.ResourceHandler {
 					combinedContent.WriteString(")")
 					
 					// Add library information if available
-					if library, ok := blockLibraryMap[f.name]; ok {
+					if f.library != "" {
 						combinedContent.WriteString(" - **Library:** `")
-						combinedContent.WriteString(library)
+						combinedContent.WriteString(f.library)
 						combinedContent.WriteString("`")
 					}
 					
@@ -212,9 +211,9 @@ func Handler() baseresource.ResourceHandler {
 				combinedContent.WriteString("  \n")
 				
 				// Add library information if available
-				if library, ok := blockLibraryMap[f.name]; ok {
+				if f.library != "" {
 					combinedContent.WriteString("**Simulink Library:** `")
-					combinedContent.WriteString(library)
+					combinedContent.WriteString(f.library)
 					combinedContent.WriteString("`  \n")
 				}
 				
@@ -245,6 +244,7 @@ func SearchBlock(searchTerm string) (string, error) {
 		path       string
 		title      string
 		category   string
+		library    string
 		content    []byte
 		exactMatch bool
 	}
@@ -266,14 +266,19 @@ func SearchBlock(searchTerm string) (string, error) {
 			return nil // Skip files we can't read
 		}
 
-		// Extract title from first line
-		title := strings.TrimSuffix(filepath.Base(path), ".md")
 		contentStr := string(content)
+		
+		// Extract library metadata
+		library := extractLibraryFromContent(contentStr)
+
+		// Extract title from first heading
+		title := strings.TrimSuffix(filepath.Base(path), ".md")
 		lines := strings.Split(contentStr, "\n")
-		if len(lines) > 0 {
-			firstLine := strings.TrimSpace(lines[0])
-			if strings.HasPrefix(firstLine, "#") {
-				title = strings.TrimSpace(strings.TrimLeft(firstLine, "#"))
+		for _, line := range lines {
+			trimmed := strings.TrimSpace(line)
+			if strings.HasPrefix(trimmed, "#") {
+				title = strings.TrimSpace(strings.TrimLeft(trimmed, "#"))
+				break
 			}
 		}
 
@@ -294,6 +299,7 @@ func SearchBlock(searchTerm string) (string, error) {
 				path:       path,
 				title:      title,
 				category:   category,
+				library:    library,
 				content:    content,
 				exactMatch: titleLower == searchLower,
 			})
@@ -335,9 +341,9 @@ func SearchBlock(searchTerm string) (string, error) {
 	doc.WriteString("  \n")
 	
 	// Add library information if available
-	if library, ok := blockLibraryMap[selected.title]; ok {
+	if selected.library != "" {
 		doc.WriteString("**Simulink Library:** `")
-		doc.WriteString(library)
+		doc.WriteString(selected.library)
 		doc.WriteString("`  \n")
 	}
 	
